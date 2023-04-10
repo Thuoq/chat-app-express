@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int           @id @default(autoincrement())
+  name            String
+  email           String        @unique
+  telphone        String?
+  salt            String
+  hash            String
+  avatarUrl       String?       @map("avatar_url")
+  createdDatetime DateTime      @default(now()) @map("created_datetime")
+  updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
+  groupMember     GroupMember[]
+  messages        Message[]
+
+  keyToken KeyToken?
+}
+
+model Conversation {
+  id              Int           @id @default(autoincrement())
+  name            String
+  createdDatetime DateTime      @default(now()) @map("created_datetime")
+  updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
+  groupMember     GroupMember[]
+  messages        Message[]
+}
+
+model GroupMember {
+  id Int @id @default(autoincrement())
+
+  conversationId Int          @map("conversation_id")
+  converstation  Conversation @relation(fields: [conversationId], references: [id])
+  userId         Int          @map("user_id")
+  user           User         @relation(fields: [userId], references: [id])
+
+  leftDateTime    DateTime @default(now()) @map("left_datetime")
+  joinDateTime    DateTime @default(now()) @map("join_datetime")
+  updatedDatetime DateTime @default(now()) @updatedAt @map("updated_datetime")
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  content        String
+  type           Int
+  conversationId Int          @map("conversation_id")
+  converstation  Conversation @relation(fields: [conversationId], references: [id])
+  userId         Int          @map("user_id")
+  user           User         @relation(fields: [userId], references: [id])
+
+  createdDatetime DateTime @default(now()) @map("created_datetime")
+  updatedDatetime DateTime @default(now()) @updatedAt @map("updated_datetime")
+}
+
+model KeyToken {
+  id Int @id @default(autoincrement())
+
+  publicKey        String   @map("public_key")
+  privateKey       String   @map("private_key")
+  refreshToken     String   @map("refresh_token") // refreshToken currentlyUsing
+  refreshTokenUsed Json // array refreshTokenUsed
+  userId           Int      @unique @map("user_id")
+  user             User     @relation(fields: [userId], references: [id])
+  createdDatetime  DateTime @default(now()) @map("created_datetime")
+  updatedDatetime  DateTime @default(now()) @updatedAt @map("updated_datetime")
+}

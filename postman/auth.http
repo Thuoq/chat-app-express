@@ -1,0 +1,17 @@
+### Sign Up
+POST {{url}}/v1/api/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Thuong",
+  "email": "a3631123@gmail.com",
+  "password": "thuong123"
+}
+
+### Log In
+POST {{url}}/v1/api/auth/login
+Content-Type: application/json
+
+{
+  "email":""
+}
