@@ -1,10 +1,10 @@
 'use strict'
-
-const { userRepo } = require('../repositories')
+const userRepo = require('../repositories/user.repo')
 const keyTokenService = require('./keytoken.service')
 const { BadRequestError } = require('../core')
 const { generateTokens, isValidPassword } = require('../utils')
 const crypto = require('node:crypto')
+const { getInfoData } = require('../utils/object')
 class AuthService {
   static signUp = async ({ email, password, name }) => {
     const user = await userRepo.findUserByEmail(email)
@@ -21,7 +21,7 @@ class AuthService {
       privateKey,
       publicKey,
     )
-    const { refreshToken, accessToken } = tokens
+    const { refreshToken } = tokens
 
     await keyTokenService.createKeyToken({
       userId: newUser.id,
@@ -30,20 +30,24 @@ class AuthService {
       refreshToken,
     })
     return {
-      refreshToken,
-      accessToken,
+      tokens,
+      user: getInfoData({
+        fields: ['id', 'name', 'email'],
+        obj: newUser,
+      }),
     }
   }
   static logIn = async ({ email, password }) => {
     const user = await userRepo.findUserByEmail(email)
-    if (!user) throw BadRequestError('Email or Password Invalid')
+    if (!user) throw new BadRequestError('Email or Password Invalid')
     const isMatchingPassword = isValidPassword({
       passwordPlainText: password,
       salt: user.salt,
       passwordHash: user.hash,
     })
 
-    if (!isMatchingPassword) throw BadRequestError('Email or Password Invalid')
+    if (!isMatchingPassword)
+      throw new BadRequestError('Email or Password Invalid')
 
     const privateKey = crypto.randomBytes(64).toString('hex')
     const publicKey = crypto.randomBytes(64).toString('hex')
@@ -53,7 +57,7 @@ class AuthService {
       privateKey,
       publicKey,
     )
-    const { refreshToken, accessToken } = tokens
+    const { refreshToken } = tokens
 
     await keyTokenService.createKeyToken({
       userId: user.id,
@@ -62,13 +66,17 @@ class AuthService {
       refreshToken,
     })
     return {
-      refreshToken,
-      accessToken,
+      tokens,
+      user: getInfoData({
+        fields: ['id', 'name', 'email'],
+        obj: user,
+      }),
     }
   }
 
   static logOut = async (userId) => {
-    return await keyTokenService.removeKeyTokenByUserId(userId)
+    const keyToken = await keyTokenService.removeKeyTokenByUserId(userId)
+    return keyToken
   }
   static handleRequestRefreshToken = async (userId, keyToken) => {
     const privateKey = crypto.randomBytes(64).toString('hex')

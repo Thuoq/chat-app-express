@@ -1,4 +1,4 @@
-const { keyTokenRepo } = require('../repositories')
+const keyTokenRepo = require('../repositories/keytoken.repo')
 const { BadRequestError } = require('../core')
 class KeyTokenService {
   static createKeyToken = async ({
@@ -9,7 +9,7 @@ class KeyTokenService {
   }) => {
     const keyToken = await this.findKeyTokenByUserId(userId)
     if (keyToken) {
-      throw BadRequestError('User already login')
+      throw new BadRequestError('User already login')
     }
     return keyTokenRepo.createKeyToken({
       userId,

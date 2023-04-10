@@ -4,7 +4,7 @@ const ACCESS_TOKEN_EXPIRE = '2d'
 const REFRESH_TOKEN_EXPIRE = '7d'
 const REQUEST_HEADER = require('../core')
 const { AuthFailureError, asyncHandler } = require('../core')
-const { KeyTokenService } = require('../services')
+const KeyTokenService = require('../services/keytoken.service')
 const generatePassword = (password) => {
   const salt = crypto.randomBytes(64).toString('hex')
   const hash = crypto
@@ -44,7 +44,7 @@ const verifyToken = (token, secret) => {
 }
 
 const checkAuthentication = asyncHandler(async (req, res, next) => {
-  const userId = req.headers[REQUEST_HEADER.CLIENT_ID]
+  const userId = +req.headers[REQUEST_HEADER.CLIENT_ID]
   if (!userId) throw new AuthFailureError('Invalid Request')
 
   const keyToken = await KeyTokenService.findKeyTokenByUserId(userId)

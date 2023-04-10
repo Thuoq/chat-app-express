@@ -1,6 +1,6 @@
 const { OK, BadRequestError } = require('../core')
 const { validationResult } = require('express-validator')
-const { AuthService } = require('../services')
+const AuthService = require('../services/auth.service')
 class AuthController {
   async signUp(req, res, next) {
     const errors = validationResult(req)
@@ -26,7 +26,7 @@ class AuthController {
         email,
         password,
       }),
-    })
+    }).send(res)
   }
   async refreshToken(req, res, next) {}
 
