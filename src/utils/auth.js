@@ -58,6 +58,7 @@ const checkAuthentication = asyncHandler(async (req, res, next) => {
 
     req.currentUser = keyToken.user
     req.keyToken = keyToken
+    req.refreshTokenPayload = refreshToken
     return next()
   }
 
@@ -74,10 +75,20 @@ const checkAuthentication = asyncHandler(async (req, res, next) => {
 
   return next()
 })
+
+const generate2Key = () => {
+  const privateKey = crypto.randomBytes(64).toString('hex')
+  const publicKey = crypto.randomBytes(64).toString('hex')
+  return {
+    privateKey,
+    publicKey,
+  }
+}
 module.exports = {
   isValidPassword,
   generatePassword,
   generateTokens,
   checkAuthentication,
   verifyToken,
+  generate2Key,
 }

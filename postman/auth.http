@@ -22,3 +22,9 @@ POST {{url}}/v1/api/auth/logout
 Content-Type: application/json
 authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE1LCJpYXQiOjE2ODExMzQ1NDIsImV4cCI6MTY4MTMwNzM0Mn0.oUmNV09rd8m3iltGWynSAnE-xXuEpj4cLPTQRZnji2Y
 x-client-id: 15
+
+### Refresh Token
+POST {{url}}/v1/api/auth/refresh-token
+Content-Type: application/json
+x-client-id: 15
+x-token-id:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE1LCJpYXQiOjE2ODExMzYwNjQsImV4cCI6MTY4MTc0MDg2NH0.j5qvytkdwKoEg93Oj7BWcGfc1B4EzJ7cBdE4VzgmP7o

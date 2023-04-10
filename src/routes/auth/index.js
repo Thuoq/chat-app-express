@@ -23,5 +23,5 @@ router.use(checkAuthentication)
 router.post('/logout', asyncHandler(authController.logOut))
 
 // Refresh Token
-router.post('/refreshToken', asyncHandler(authController.refreshToken))
+router.post('/refresh-token', asyncHandler(authController.refreshToken))
 module.exports = router

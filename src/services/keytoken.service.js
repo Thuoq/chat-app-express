@@ -27,6 +27,9 @@ class KeyTokenService {
   static updateKeyTokenByUserId(userId, payload) {
     return keyTokenRepo.updateKeyTokenByUserId(userId, payload)
   }
+  static removeKeyTokenById(id) {
+    return keyTokenRepo.removeKeyTokenById(id)
+  }
 }
 
 module.exports = KeyTokenService

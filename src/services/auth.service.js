@@ -1,9 +1,8 @@
 'use strict'
 const userRepo = require('../repositories/user.repo')
 const keyTokenService = require('./keytoken.service')
-const { BadRequestError } = require('../core')
-const { generateTokens, isValidPassword } = require('../utils')
-const crypto = require('node:crypto')
+const { BadRequestError, ForbiddenError, AuthFailureError } = require('../core')
+const { generateTokens, isValidPassword, generate2Key } = require('../utils')
 const { getInfoData } = require('../utils/object')
 class AuthService {
   static signUp = async ({ email, password, name }) => {
@@ -14,8 +13,7 @@ class AuthService {
       passwordPlainText: password,
       name,
     })
-    const privateKey = crypto.randomBytes(64).toString('hex')
-    const publicKey = crypto.randomBytes(64).toString('hex')
+    const { privateKey, publicKey } = generate2Key()
     const tokens = await generateTokens(
       { userId: newUser.id },
       privateKey,
@@ -49,9 +47,7 @@ class AuthService {
     if (!isMatchingPassword)
       throw new BadRequestError('Email or Password Invalid')
 
-    const privateKey = crypto.randomBytes(64).toString('hex')
-    const publicKey = crypto.randomBytes(64).toString('hex')
-
+    const { privateKey, publicKey } = generate2Key()
     const tokens = await generateTokens(
       { userId: user.id },
       privateKey,
@@ -78,9 +74,20 @@ class AuthService {
     const keyToken = await keyTokenService.removeKeyTokenByUserId(userId)
     return keyToken
   }
-  static handleRequestRefreshToken = async (userId, keyToken) => {
-    const privateKey = crypto.randomBytes(64).toString('hex')
-    const publicKey = crypto.randomBytes(64).toString('hex')
+  static handleRequestRefreshToken = async (
+    user,
+    keyToken,
+    refreshTokenPayload,
+  ) => {
+    const userId = user.id
+    if (keyToken.refreshTokenUsed?.includes(refreshTokenPayload)) {
+      await keyTokenService.removeKeyTokenById(keyToken.id)
+      throw new ForbiddenError('Something wrong ! please login again')
+    }
+    if (keyToken.refreshToken !== refreshTokenPayload)
+      throw new AuthFailureError('User not registered')
+
+    const { privateKey, publicKey } = generate2Key()
     const tokens = await generateTokens({ userId }, privateKey, publicKey)
     const { refreshToken } = tokens
     const refreshTokenUsed = keyToken.refreshTokenUsed
@@ -91,7 +98,9 @@ class AuthService {
       refreshToken,
       refreshTokenUsed: refreshTokenUsed,
     })
-    return refreshToken
+    return {
+      tokens,
+    }
   }
 }
 module.exports = AuthService

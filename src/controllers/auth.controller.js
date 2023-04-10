@@ -28,7 +28,19 @@ class AuthController {
       }),
     }).send(res)
   }
-  async refreshToken(req, res, next) {}
+  async refreshToken(req, res, next) {
+    const user = req.currentUser
+    const keyToken = req.keyToken
+    const refreshTokenPayload = req.refreshTokenPayload
+    new OK({
+      message: 'Refresh Token Success Fully',
+      metadata: await AuthService.handleRequestRefreshToken(
+        user,
+        keyToken,
+        refreshTokenPayload,
+      ),
+    }).send(res)
+  }
 
   async logOut(req, res, next) {
     const userId = req.currentUser?.id

@@ -42,9 +42,17 @@ const updateKeyTokenByUserId = (userId, payload) => {
     data: payload,
   })
 }
+const removeKeyTokenById = (id) => {
+  return prisma.keyToken.delete({
+    where: {
+      id,
+    },
+  })
+}
 module.exports = {
   findKeyTokenByUserId,
   createKeyToken,
   removeKeyTokenByUserId,
   updateKeyTokenByUserId,
+  removeKeyTokenById,
 }
