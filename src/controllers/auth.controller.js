@@ -1,4 +1,4 @@
-const { OK, BadRequestError } = require('../core')
+const { OK, BadRequestError, CREATED } = require('../core')
 const { validationResult } = require('express-validator')
 const AuthService = require('../services/auth.service')
 class AuthController {
@@ -6,7 +6,7 @@ class AuthController {
     const errors = validationResult(req)
     if (!errors.isEmpty()) throw new BadRequestError('Input Invalid !')
     const { email, password, name } = req.body
-    new OK({
+    new CREATED({
       message: 'Sign Up success fully',
       metadata: await AuthService.signUp({
         email,
