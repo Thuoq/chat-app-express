@@ -87,14 +87,12 @@ class AuthService {
     if (keyToken.refreshToken !== refreshTokenPayload)
       throw new AuthFailureError('User not registered')
 
-    const { privateKey, publicKey } = generate2Key()
+    const { privateKey, publicKey } = keyToken
     const tokens = await generateTokens({ userId }, privateKey, publicKey)
     const { refreshToken } = tokens
     const refreshTokenUsed = keyToken.refreshTokenUsed
     refreshTokenUsed.push(refreshToken)
     await keyTokenService.updateKeyTokenByUserId(userId, {
-      publicKey,
-      privateKey,
       refreshToken,
       refreshTokenUsed: refreshTokenUsed,
     })
