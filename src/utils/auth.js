@@ -1,8 +1,8 @@
 const crypto = require('node:crypto')
 const jwt = require('jsonwebtoken')
-const ACCESS_TOKEN_EXPIRE = '2d'
+const ACCESS_TOKEN_EXPIRE = Number(process.env.ACCESS_TOKEN_EXPIRE)
 const REFRESH_TOKEN_EXPIRE = '7d'
-const REQUEST_HEADER = require('../core')
+const { REQUEST_HEADER } = require('../core')
 const { AuthFailureError, asyncHandler } = require('../core')
 const KeyTokenService = require('../services/keytoken.service')
 const generatePassword = (password) => {
@@ -48,6 +48,7 @@ const checkAuthentication = asyncHandler(async (req, res, next) => {
   if (!userId) throw new AuthFailureError('Invalid Request')
 
   const keyToken = await KeyTokenService.findKeyTokenByUserId(userId)
+
   if (!keyToken) throw new AuthFailureError('Invalid Request')
   // Handle When Refresh Token
   const refreshToken = req.headers[REQUEST_HEADER.REFRESH_TOKEN]
@@ -63,7 +64,7 @@ const checkAuthentication = asyncHandler(async (req, res, next) => {
   }
 
   // Handle When Access Token
-  const accessToken = req.headers[REQUEST_HEADER.AUTHORIZATION]
+  const accessToken = req.cookies[REQUEST_HEADER.AUTHORIZATION]
   if (!accessToken) throw new AuthFailureError('Invalid Request')
 
   const decodedUser = await verifyToken(accessToken, keyToken.publicKey)

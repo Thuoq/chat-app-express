@@ -5,15 +5,17 @@ const { body } = require('express-validator')
 const { checkAuthentication } = require('../../utils/auth')
 const router = express.Router()
 
+// SIGNUP
 router.post(
-  '/signup',
+  '/sign-up',
   body('email').isEmail(),
   body('password').isLength({ min: 8 }),
+  body('name').isString(),
   asyncHandler(authController.signUp),
 )
 // LOGIN
 router.post(
-  '/login',
+  '/sign-in',
   body('email').isEmail(),
   body('password').isLength({ min: 8 }),
   asyncHandler(authController.logIn),

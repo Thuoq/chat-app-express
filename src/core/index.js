@@ -19,5 +19,5 @@ module.exports = {
   ConflictRequestError,
   OK,
   CREATED,
-  ...REQUEST_HEADER,
+  REQUEST_HEADER,
 }
