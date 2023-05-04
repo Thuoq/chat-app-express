@@ -26,8 +26,16 @@ const getListContactByUser = (userId) => {
     },
   })
 }
+const findUserById = (userId) => {
+  return prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  })
+}
 module.exports = {
   findUserByEmail,
   createUser,
   getListContactByUser,
+  findUserById,
 }

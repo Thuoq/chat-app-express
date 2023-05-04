@@ -29,7 +29,6 @@ const getListConversationByUser = (userId) =>
 const createConversationByUser = (currentUserId, payload) => {
   return prisma.conversation.create({
     data: {
-      name: '',
       groupMember: {
         createMany: {
           data: [{ userId: currentUserId }, { userId: payload.targetUserId }],
