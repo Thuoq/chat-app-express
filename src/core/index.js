@@ -1,23 +1,12 @@
 const asyncHandler = require('./async.handler')
 const HTTP_STATUS = require('./http-status')
-const { CREATED, OK } = require('./success.response')
-const {
-  ForbiddenError,
-  NotFoundError,
-  AuthFailureError,
-  BadRequestError,
-  ConflictRequestError,
-} = require('./error.response')
+const SuccessResponse = require('./success.response')
+const ErrorResponse = require('./error.response')
 const REQUEST_HEADER = require('./headers')
 module.exports = {
   asyncHandler,
   HTTP_STATUS,
-  ForbiddenError,
-  NotFoundError,
-  AuthFailureError,
-  BadRequestError,
-  ConflictRequestError,
-  OK,
-  CREATED,
+  ...ErrorResponse,
+  ...SuccessResponse,
   REQUEST_HEADER,
 }

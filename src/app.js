@@ -4,16 +4,20 @@ const { default: helmet } = require('helmet')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
-const bodyParser = require('body-parser')
-
+const cloudinary = require('cloudinary').v2
+const cloudinaryConfig = require('./config/config.cloudinary')
 const cookieParser = require('cookie-parser')
 const appRoutes = require('./routes')
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(helmet())
 app.use(compression())
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(express.json())
+app.use(
+  express.urlencoded({
+    extended: true,
+  }),
+)
 app.use(
   cors({
     origin: process.env.FE_BASE_URL,

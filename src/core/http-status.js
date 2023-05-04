@@ -27,6 +27,10 @@ const HTTP_STATUS = {
     status: 400,
     reason: 'Not found !',
   },
+  INTERNAL_SERVER: {
+    status: 500,
+    reason: 'Internal server!',
+  },
 }
 
 module.exports = HTTP_STATUS

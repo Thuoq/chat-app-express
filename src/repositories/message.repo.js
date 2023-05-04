@@ -2,30 +2,46 @@ const { prisma } = require('../database')
 const getListMessageOne2One = (currentUserId, targetUserId) => {
   return prisma.message.findMany({
     where: {
-      fromUserId: currentUserId,
-      toUserId: targetUserId,
+      fromUserId: {
+        in: [currentUserId, targetUserId],
+      },
+      toUserId: {
+        in: [currentUserId, targetUserId],
+      },
       sentBy: {
-        id: currentUserId,
+        id: {
+          in: [currentUserId, targetUserId],
+        },
       },
       receivedBy: {
-        id: targetUserId,
+        id: {
+          in: [currentUserId, targetUserId],
+        },
       },
     },
     orderBy: {
-      createdDatetime: 'desc',
+      createdDatetime: 'asc',
     },
   })
 }
 const getOneMessageOne2One = (currentUserId, targetUserId) => {
   return prisma.message.findFirst({
     where: {
-      fromUserId: currentUserId,
-      toUserId: targetUserId,
+      fromUserId: {
+        in: [currentUserId, targetUserId],
+      },
+      toUserId: {
+        in: [currentUserId, targetUserId],
+      },
       sentBy: {
-        id: currentUserId,
+        id: {
+          in: [currentUserId, targetUserId],
+        },
       },
       receivedBy: {
-        id: targetUserId,
+        id: {
+          in: [currentUserId, targetUserId],
+        },
       },
     },
   })
