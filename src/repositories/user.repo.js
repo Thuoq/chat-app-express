@@ -17,8 +17,17 @@ const createUser = ({ email, passwordPlainText, name }) => {
     },
   })
 }
-
+const getListContactByUser = (userId) => {
+  return prisma.user.findMany({
+    where: {
+      id: {
+        notIn: [userId],
+      },
+    },
+  })
+}
 module.exports = {
   findUserByEmail,
   createUser,
+  getListContactByUser,
 }

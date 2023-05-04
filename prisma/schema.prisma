@@ -11,27 +11,27 @@ datasource db {
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
-  name            String
-  email           String        @unique
-  telphone        String?
-  salt            String
-  hash            String
-  avatarUrl       String?       @map("avatar_url")
-  createdDatetime DateTime      @default(now()) @map("created_datetime")
-  updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
-  groupMember     GroupMember[]
-  messages        Message[]
-
-  keyToken KeyToken?
+  id               Int           @id @default(autoincrement())
+  name             String
+  email            String        @unique
+  telphone         String?
+  salt             String
+  hash             String
+  avatarUrl        String?       @map("avatar_url")
+  createdDatetime  DateTime      @default(now()) @map("created_datetime")
+  updatedDatetime  DateTime      @default(now()) @updatedAt @map("updated_datetime")
+  groupMember      GroupMember[]
+  messagesSent     Message[]     @relation("sentMessages")
+  messagesReceived Message[]     @relation("receivedMessages")
+  keyToken         KeyToken?
 }
 
 model Conversation {
   id              Int           @id @default(autoincrement())
-  name            String
+  name            String?
   createdDatetime DateTime      @default(now()) @map("created_datetime")
   updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
-  groupMember     GroupMember[]
+  groupMembers    GroupMember[]
   messages        Message[]
 }
 
@@ -51,12 +51,14 @@ model GroupMember {
 model Message {
   id             Int          @id @default(autoincrement())
   content        String
-  type           Int
+  type           Int?
   conversationId Int          @map("conversation_id")
   converstation  Conversation @relation(fields: [conversationId], references: [id])
-  userId         Int          @map("user_id")
-  user           User         @relation(fields: [userId], references: [id])
 
+  fromUserId      Int      @map("from_user_id")
+  toUserId        Int      @map("to_user_id")
+  sentBy          User     @relation("sentMessages", fields: [fromUserId], references: [id])
+  receivedBy      User     @relation("receivedMessages", fields: [toUserId], references: [id])
   createdDatetime DateTime @default(now()) @map("created_datetime")
   updatedDatetime DateTime @default(now()) @updatedAt @map("updated_datetime")
 }
@@ -67,7 +69,7 @@ model KeyToken {
   publicKey        String   @map("public_key")
   privateKey       String   @map("private_key")
   refreshToken     String   @map("refresh_token") // refreshToken currentlyUsing
-  refreshTokenUsed Json // array refreshTokenUsed
+  refreshTokenUsed Json     @default("[]") @map("refresh_token_used") @db.Json // array refreshTokenUsed
   userId           Int      @unique @map("user_id")
   user             User     @relation(fields: [userId], references: [id])
   createdDatetime  DateTime @default(now()) @map("created_datetime")
