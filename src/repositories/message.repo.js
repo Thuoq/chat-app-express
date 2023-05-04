@@ -19,6 +19,18 @@ const getListMessageOne2One = (currentUserId, targetUserId) => {
         },
       },
     },
+    include: {
+      sentBy: {
+        select: {
+          avatarUrl: true,
+        },
+      },
+      receivedBy: {
+        select: {
+          avatarUrl: true,
+        },
+      },
+    },
     orderBy: {
       createdDatetime: 'asc',
     },

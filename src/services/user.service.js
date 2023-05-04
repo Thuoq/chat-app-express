@@ -1,6 +1,5 @@
 const cloudinary = require('cloudinary').v2
 const userRepo = require('../repositories/user.repo')
-const { InternalServerError } = require('../core')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
@@ -34,7 +33,7 @@ class UserService {
     })
 
     fs.unlinkSync(tempFilePath)
-    return userUpdated
+    return { user: userUpdated }
   }
 }
 module.exports = UserService
