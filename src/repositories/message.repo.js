@@ -66,6 +66,7 @@ const createMessageOne2One = (currentUserId, body, conversationId = null) => {
       : await tx.conversation.create({
           data: {
             name: null,
+            isDirectMessage: CONVERSATION_TYPE.directMessage,
           },
         })
 
@@ -80,9 +81,19 @@ const createMessageOne2One = (currentUserId, body, conversationId = null) => {
     return message
   })
 }
+const createMessage4Group = (currentUserId, conversationId, payload) => {
+  return prisma.message.create({
+    data: {
+      conversationId,
+      fromUserId: currentUserId,
+      content: payload.content,
+    },
+  })
+}
 
 module.exports = {
   getListMessageOne2One,
   createMessageOne2One,
   getOneMessageOne2One,
+  createMessage4Group,
 }

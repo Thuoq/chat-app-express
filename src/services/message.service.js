@@ -1,6 +1,7 @@
 const messageRepo = require('../repositories/message.repo')
 const userRepo = require('../repositories/user.repo')
-const { BadRequestError } = require('../core')
+const conversationRepo = require('../repositories/conversation.repo')
+const { BadRequestError, NotFoundError } = require('../core')
 class MessageService {
   static async getListMessageOne2One(currentUserId, targetUserId) {
     // check target user exits
@@ -28,6 +29,22 @@ class MessageService {
       currentUserId,
       body,
       conversationId,
+    )
+    return {
+      message: newMessage,
+    }
+  }
+  static async sendMessage2Group(conversationId, currentUserId, body) {
+    const conversation = await conversationRepo.findConversationGroupById(
+      conversationId,
+      currentUserId,
+    )
+    if (!conversation) throw new NotFoundError()
+
+    const newMessage = await messageRepo.createMessage4Group(
+      currentUserId,
+      conversationId,
+      body,
     )
     return {
       message: newMessage,

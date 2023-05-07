@@ -20,6 +20,9 @@ router.post(
   body('password').isLength({ min: 8 }),
   asyncHandler(authController.logIn),
 )
+// FORGOT PASSWORD
+router.post('/forgot-password', body('email').isEmail(), asyncHandler())
+
 router.use(checkAuthentication)
 // LOGOUT
 router.post('/logout', asyncHandler(authController.logOut))

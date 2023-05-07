@@ -8,6 +8,12 @@ const cloudinary = require('cloudinary').v2
 const cloudinaryConfig = require('./config/config.cloudinary')
 const cookieParser = require('cookie-parser')
 const appRoutes = require('./routes')
+
+cloudinary.config({
+  cloud_name: cloudinaryConfig.cloudinary.cloudName,
+  api_key: cloudinaryConfig.cloudinary.apiKey,
+  api_secret: cloudinaryConfig.cloudinary.apiSecret,
+})
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(helmet())

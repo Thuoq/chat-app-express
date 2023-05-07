@@ -12,4 +12,8 @@ router.post(
   body('content').isString(),
   asyncHandler(messageController.sendMessage2One),
 )
+router.post(
+  '/group/:conversationId/send-message',
+  asyncHandler(messageController.sendMessage2Group),
+)
 module.exports = router

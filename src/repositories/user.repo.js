@@ -38,10 +38,20 @@ const updateUserByPayload = (userId, payload) =>
     where: { id: userId },
     data: payload,
   })
+
+const getListUserByFromIds = (userIds) =>
+  prisma.user.findMany({
+    where: {
+      id: {
+        in: userIds,
+      },
+    },
+  })
 module.exports = {
   findUserByEmail,
   createUser,
   getListContactByUser,
   findUserById,
   updateUserByPayload,
+  getListUserByFromIds,
 }

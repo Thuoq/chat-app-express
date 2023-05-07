@@ -1,21 +1,27 @@
-const { OK, CREATED } = require('../core')
+const { OK, CREATED, BadRequestError } = require('../core')
 const ConversationService = require('../services/conversation.service')
+const { validationResult } = require('express-validator')
 class ConversationController {
-  async getAllConversationByUser(req, res, next) {
-    const userId = req.currentUser.id
-
-    new OK({
-      message: 'ok',
-      metadata: await ConversationService.getAllConversationByUser(userId),
+  /*
+   * @body: {members: [], name: string,  avatar: string}
+   * */
+  async createConversation4Group(req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) throw new BadRequestError('Input Invalid !')
+    const bufferImage = req.file.buffer
+    const currentUserId = req.currentUser.id
+    new CREATED({
+      metadata: await ConversationService.createConversation4Group(
+        currentUserId,
+        { ...req.body, bufferImage },
+      ),
     }).send(res)
   }
-  async createConversationByUser(req, res, next) {
-    const userId = req.currentUser.id
-    new CREATED({
-      message: 'ok',
-      metadata: await ConversationService.createConversationByUser(
-        userId,
-        req.body,
+  async getLitConversationGroupByUser(req, res, next) {
+    const currentUserId = req.currentUser.id
+    new OK({
+      metadata: await ConversationService.getListConversationGroup(
+        currentUserId,
       ),
     }).send(res)
   }
