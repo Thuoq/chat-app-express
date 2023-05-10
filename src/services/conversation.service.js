@@ -1,5 +1,5 @@
 const conversationRepo = require('../repositories/conversation.repo')
-const { getAvatarUrlFromCloudinary } = require('../utils')
+const { getImageUrlFromCloudinary } = require('../utils')
 const userRepo = require('../repositories/user.repo')
 const { BadRequestError } = require('../core/error.response')
 const { body } = require('express-validator')
@@ -24,10 +24,10 @@ class ConversationService {
     if (membersIdsParse.length <= 1) throw new BadRequestError()
     const users = await userRepo.getListUserByFromIds(membersIdsParse)
     if (users.length !== membersIdsParse.length) throw new BadRequestError()
-    const { avatarUrl } = await getAvatarUrlFromCloudinary(payload.bufferImage)
+    const { imageUrl } = await getImageUrlFromCloudinary(payload.bufferImage)
 
     const conversation = await conversationRepo.createConversation4Group({
-      avatarUrl,
+      avatarUrl: imageUrl,
       name: payload.name,
       memberIds: [...membersIdsParse, userId],
     })

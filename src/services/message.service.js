@@ -2,6 +2,7 @@ const messageRepo = require('../repositories/message.repo')
 const userRepo = require('../repositories/user.repo')
 const conversationRepo = require('../repositories/conversation.repo')
 const { BadRequestError, NotFoundError } = require('../core')
+const { getImageUrlFromCloudinary } = require('../utils/file')
 class MessageService {
   static async getListMessageOne2One(currentUserId, targetUserId) {
     // check target user exits
@@ -48,6 +49,12 @@ class MessageService {
     )
     return {
       message: newMessage,
+    }
+  }
+  static async handleUploadImage(imageBuffer) {
+    const { imageUrl } = await getImageUrlFromCloudinary(imageBuffer)
+    return {
+      imageUrl,
     }
   }
 }

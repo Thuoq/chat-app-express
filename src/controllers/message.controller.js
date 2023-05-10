@@ -41,6 +41,15 @@ class MessageController {
       metadata: newMessage,
     }).send(res)
   }
+  async handleUploadImage(req, res, next) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) throw new BadRequestError('Input Invalid !')
+    // const currentUserId = req.currentUser?.id
+    const bufferImage = req.file.buffer
+    new OK({
+      metadata: await MessageService.handleUploadImage(bufferImage),
+    }).send(res)
+  }
 }
 
 module.exports = new MessageController()

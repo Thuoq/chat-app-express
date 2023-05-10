@@ -15,7 +15,7 @@ const uploadOptions = {
   folder: 'avatars',
 }
 const writeFile = util.promisify(fs.writeFile)
-const getAvatarUrlFromCloudinary = async (imageBuffer, currentUserId = 0) => {
+const getImageUrlFromCloudinary = async (imageBuffer, currentUserId = 0) => {
   const tempFilePath = path.join(os.tmpdir(), `avatar_${currentUserId}.jpg`)
   await writeFile(tempFilePath, imageBuffer)
 
@@ -24,10 +24,10 @@ const getAvatarUrlFromCloudinary = async (imageBuffer, currentUserId = 0) => {
     uploadOptions,
   )
   fs.unlinkSync(tempFilePath)
-  return { avatarUrl: uploadResult.secure_url }
+  return { imageUrl: uploadResult.secure_url }
 }
 
 module.exports = {
-  getAvatarUrlFromCloudinary,
+  getImageUrlFromCloudinary,
   uploadFile: upload,
 }
