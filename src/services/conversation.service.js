@@ -20,11 +20,15 @@ class ConversationService {
     }
   }
   static async createConversation4Group(userId, payload) {
-    const membersIdsParse = JSON.parse(payload.memberIds)
+    const membersIdsParse = payload.memberIds.split(',').map(Number)
     if (membersIdsParse.length <= 1) throw new BadRequestError()
+
     const users = await userRepo.getListUserByFromIds(membersIdsParse)
     if (users.length !== membersIdsParse.length) throw new BadRequestError()
-    const { imageUrl } = await getImageUrlFromCloudinary(payload.bufferImage)
+    const { imageUrl } = await getImageUrlFromCloudinary(
+      payload.bufferImage,
+      userId,
+    )
 
     const conversation = await conversationRepo.createConversation4Group({
       avatarUrl: imageUrl,

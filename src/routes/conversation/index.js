@@ -7,12 +7,12 @@ const router = express.Router()
 router.use(checkAuthentication)
 
 router.post(
-  '/group',
+  '/groups',
   uploadFile.single('avatar'),
   asyncHandler(conversationController.createConversation4Group),
 )
 router.get(
-  '/group',
+  '/groups',
   asyncHandler(conversationController.getLitConversationGroupByUser),
 )
 

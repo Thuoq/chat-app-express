@@ -10,6 +10,7 @@ class ConversationController {
     if (!errors.isEmpty()) throw new BadRequestError('Input Invalid !')
     const bufferImage = req.file.buffer
     const currentUserId = req.currentUser.id
+    console.log('body:: ', req.body, bufferImage)
     new CREATED({
       metadata: await ConversationService.createConversation4Group(
         currentUserId,
