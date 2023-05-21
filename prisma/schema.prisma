@@ -30,7 +30,7 @@ model Conversation {
   id              Int           @id @default(autoincrement())
   name            String?
   avatarUrl       String?
-  isDirectMessage Int @map("is_direct_message") @default(1)
+  isDirectMessage Int           @default(1) @map("is_direct_message")
   createdDatetime DateTime      @default(now()) @map("created_datetime")
   updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
   groupMembers    GroupMember[]
@@ -55,12 +55,12 @@ model Message {
   content        String
   type           Int?
   conversationId Int          @map("conversation_id")
-  converstation  Conversation @relation(fields: [conversationId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
 
   fromUserId      Int      @map("from_user_id")
-  toUserId        Int?      @map("to_user_id")
+  toUserId        Int?     @map("to_user_id")
   sentBy          User     @relation("sentMessages", fields: [fromUserId], references: [id])
-  receivedBy      User?     @relation("receivedMessages", fields: [toUserId], references: [id])
+  receivedBy      User?    @relation("receivedMessages", fields: [toUserId], references: [id])
   createdDatetime DateTime @default(now()) @map("created_datetime")
   updatedDatetime DateTime @default(now()) @updatedAt @map("updated_datetime")
 }

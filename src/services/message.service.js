@@ -57,5 +57,14 @@ class MessageService {
       imageUrl,
     }
   }
+  static async getListMessage4Group(memberId, conversationId) {
+    const messages = await messageRepo.getListMessageGroupByMember(
+      memberId,
+      conversationId,
+    )
+    return {
+      messages,
+    }
+  }
 }
 module.exports = MessageService

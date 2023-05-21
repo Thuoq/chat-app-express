@@ -13,7 +13,11 @@ router.post(
 )
 router.get(
   '/groups',
-  asyncHandler(conversationController.getLitConversationGroupByUser),
+  asyncHandler(conversationController.getListConversationGroupByUser),
+)
+router.get(
+  '/groups/:groupId/messages',
+  asyncHandler(conversationController.getListMessagesGroupByMember),
 )
 
 module.exports = router

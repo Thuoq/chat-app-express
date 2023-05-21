@@ -90,10 +90,24 @@ const createMessage4Group = (currentUserId, conversationId, payload) => {
     },
   })
 }
-
+const getListMessageGroupByMember = (memberId, conversationId) => {
+  return prisma.message.findMany({
+    where: {
+      conversation: {
+        id: conversationId,
+        groupMembers: {
+          some: {
+            userId: memberId,
+          },
+        },
+      },
+    },
+  })
+}
 module.exports = {
   getListMessageOne2One,
   createMessageOne2One,
   getOneMessageOne2One,
   createMessage4Group,
+  getListMessageGroupByMember,
 }

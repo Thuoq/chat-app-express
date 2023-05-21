@@ -18,13 +18,16 @@ class ConversationController {
       ),
     }).send(res)
   }
-  async getLitConversationGroupByUser(req, res, next) {
+  async getListConversationGroupByUser(req, res, next) {
     const currentUserId = req.currentUser.id
     new OK({
       metadata: await ConversationService.getListConversationGroup(
         currentUserId,
       ),
     }).send(res)
+  }
+  async getListMessagesGroupByMember(req, res, next) {
+    const currentUserId = req.currentUser.id
   }
 }
 

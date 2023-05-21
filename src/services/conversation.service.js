@@ -2,7 +2,7 @@ const conversationRepo = require('../repositories/conversation.repo')
 const { getImageUrlFromCloudinary } = require('../utils')
 const userRepo = require('../repositories/user.repo')
 const { BadRequestError } = require('../core/error.response')
-const { body } = require('express-validator')
+const messageRepo = require('../repositories/message.repo')
 class ConversationService {
   static async getAllConversationByUser(userId) {
     const conversations = await conversationRepo.getListConversationByUser(
@@ -44,6 +44,13 @@ class ConversationService {
       currentUserId,
     )
     return { conversations }
+  }
+  static async getListMessageGroupByMember(groupId, currentUserId) {
+    const messages = await messageRepo.getListMessageGroupByMember(
+      currentUserId,
+      groupId,
+    )
+    return { messages }
   }
 }
 module.exports = ConversationService
