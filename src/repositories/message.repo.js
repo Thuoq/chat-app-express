@@ -102,6 +102,14 @@ const getListMessageGroupByMember = (memberId, conversationId) => {
         },
       },
     },
+    include: {
+      sentBy: {
+        select: {
+          name: true,
+          avatarUrl: true,
+        },
+      },
+    },
   })
 }
 module.exports = {

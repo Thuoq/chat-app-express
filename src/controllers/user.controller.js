@@ -13,5 +13,13 @@ class UserController {
       metadata: userUpdated,
     }).send(res)
   }
+  async getListUserOnline(req, res, next) {
+    const currentUserId = req.currentUser.id
+    const users = await userService.getListUserOnline()
+    new OK({
+      message: 'Get Users Online success fully',
+      metadata: users,
+    }).send(res)
+  }
 }
 module.exports = new UserController()

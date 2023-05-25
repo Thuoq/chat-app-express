@@ -10,20 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatusCode {
+  ONLINE
+  BUSY
+  AWAY
+  OFFLINE
+}
+
 model User {
-  id               Int           @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   name             String
-  email            String        @unique
+  email            String          @unique
   telphone         String?
   salt             String
   hash             String
-  avatarUrl        String?       @map("avatar_url")
-  createdDatetime  DateTime      @default(now()) @map("created_datetime")
-  updatedDatetime  DateTime      @default(now()) @updatedAt @map("updated_datetime")
+  statusCode       UserStatusCode? @default(ONLINE) @map("status_code")
+  avatarUrl        String?         @map("avatar_url")
+  createdDatetime  DateTime        @default(now()) @map("created_datetime")
+  updatedDatetime  DateTime        @default(now()) @updatedAt @map("updated_datetime")
   groupMember      GroupMember[]
-  messagesSent     Message[]     @relation("sentMessages")
-  messagesReceived Message[]     @relation("receivedMessages")
+  messagesSent     Message[]       @relation("sentMessages")
+  messagesReceived Message[]       @relation("receivedMessages")
   keyToken         KeyToken?
+  files            File[]
 }
 
 model Conversation {
@@ -40,29 +49,44 @@ model Conversation {
 model GroupMember {
   id Int @id @default(autoincrement())
 
-  conversationId Int          @map("conversation_id")
-  converstation  Conversation @relation(fields: [conversationId], references: [id])
-  userId         Int          @map("user_id")
-  user           User         @relation(fields: [userId], references: [id])
+  conversationId     Int          @map("conversation_id")
+  converstation      Conversation @relation(fields: [conversationId], references: [id])
+  userId             Int          @map("user_id")
+  user               User         @relation(fields: [userId], references: [id])
+  role               Role?        @relation(fields: [roleId], references: [id])
+  roleId             Int?         @map("role_id")
+  canInviteNewMember Boolean      @default(true) @map("can_invite_new_member")
+  leftDateTime       DateTime     @default(now()) @map("left_datetime")
+  joinDateTime       DateTime     @default(now()) @map("join_datetime")
+  updatedDatetime    DateTime     @default(now()) @updatedAt @map("updated_datetime")
+}
 
-  leftDateTime    DateTime @default(now()) @map("left_datetime")
-  joinDateTime    DateTime @default(now()) @map("join_datetime")
-  updatedDatetime DateTime @default(now()) @updatedAt @map("updated_datetime")
+model Role {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  groupMembers GroupMember[]
+  permissions  Permission[]
+  messages     Message[]
 }
 
 model Message {
   id             Int          @id @default(autoincrement())
   content        String
-  type           Int?
   conversationId Int          @map("conversation_id")
   conversation   Conversation @relation(fields: [conversationId], references: [id])
 
-  fromUserId      Int      @map("from_user_id")
-  toUserId        Int?     @map("to_user_id")
-  sentBy          User     @relation("sentMessages", fields: [fromUserId], references: [id])
-  receivedBy      User?    @relation("receivedMessages", fields: [toUserId], references: [id])
-  createdDatetime DateTime @default(now()) @map("created_datetime")
-  updatedDatetime DateTime @default(now()) @updatedAt @map("updated_datetime")
+  imageUrl             String?   @map("image_url")
+  fromUserId           Int       @map("from_user_id")
+  toUserId             Int?      @map("to_user_id")
+  sentBy               User      @relation("sentMessages", fields: [fromUserId], references: [id])
+  receivedBy           User?     @relation("receivedMessages", fields: [toUserId], references: [id])
+  fileId               Int?      @map("file_id")
+  file                 File?     @relation(fields: [fileId], references: [id])
+  canBeDeletedByRoleId Int?      @map("can_be_deleted_by_role_id")
+  canBeDeletedByRole   Role?     @relation(fields: [canBeDeletedByRoleId], references: [id])
+  createdDatetime      DateTime  @default(now()) @map("created_datetime")
+  updatedDatetime      DateTime  @default(now()) @updatedAt @map("updated_datetime")
+  deletedAt            DateTime? @map("deleted_at")
 }
 
 model KeyToken {
@@ -76,4 +100,25 @@ model KeyToken {
   user             User     @relation(fields: [userId], references: [id])
   createdDatetime  DateTime @default(now()) @map("created_datetime")
   updatedDatetime  DateTime @default(now()) @updatedAt @map("updated_datetime")
+}
+
+model File {
+  id              Int       @id @default(autoincrement())
+  name            String
+  type            String
+  url             String
+  userId          Int       @map("user_id")
+  user            User      @relation(fields: [userId], references: [id])
+  createdDatetime DateTime  @default(now()) @map("created_datetime")
+  updatedDatetime DateTime  @default(now()) @updatedAt @map("updated_datetime")
+  messages        Message[]
+}
+
+model Permission {
+  id        Int     @id @default(autoincrement())
+  action    String
+  isEnabled Boolean @map("is_enabled")
+
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int  @map("role_id")
 }

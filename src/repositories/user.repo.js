@@ -47,6 +47,13 @@ const getListUserByFromIds = (userIds) =>
       },
     },
   })
+
+const getListUserByStatusCode = (statusCode) =>
+  prisma.user.findMany({
+    where: {
+      statusCode,
+    },
+  })
 module.exports = {
   findUserByEmail,
   createUser,
@@ -54,4 +61,5 @@ module.exports = {
   findUserById,
   updateUserByPayload,
   getListUserByFromIds,
+  getListUserByStatusCode,
 }

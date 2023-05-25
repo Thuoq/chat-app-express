@@ -11,4 +11,5 @@ router.post(
   uploadFile.single('avatar'),
   asyncHandler(userController.uploadAvatar),
 )
+router.get('/online', asyncHandler(userController.getListUserOnline))
 module.exports = router
