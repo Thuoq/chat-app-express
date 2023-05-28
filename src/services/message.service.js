@@ -3,6 +3,7 @@ const userRepo = require('../repositories/user.repo')
 const conversationRepo = require('../repositories/conversation.repo')
 const { BadRequestError, NotFoundError } = require('../core')
 const { getImageUrlFromCloudinary } = require('../utils/file')
+const cloudinary = require('cloudinary').v2
 class MessageService {
   static async getListMessageOne2One(currentUserId, targetUserId) {
     // check target user exits
@@ -26,14 +27,28 @@ class MessageService {
     )
 
     const conversationId = messageBefore?.conversationId || null
-    const newMessage = await messageRepo.createMessageOne2One(
-      currentUserId,
-      body,
-      conversationId,
-    )
-    return {
-      message: newMessage,
+    // check have images
+    if (body.imageUrls?.length && Array.isArray(body.imageUrls)) {
+      // get base 64 : todo: improve promise all
+      const payloadUploadImage = []
+      for (const base64Image of body.imageUrls) {
+        const result = await cloudinary.uploader.upload(base64Image)
+        payloadUploadImage.push({ imageUrl: result.secure_url, targetUserId })
+      }
+      await messageRepo.createMessageOne2OneWhenImage(
+        currentUserId,
+        payloadUploadImage,
+        conversationId,
+      )
     }
+    if (body.content) {
+      await messageRepo.createMessageOne2One(
+        currentUserId,
+        body,
+        conversationId,
+      )
+    }
+    return true
   }
   static async sendMessage2Group(conversationId, currentUserId, body) {
     const conversation = await conversationRepo.findConversationGroupById(

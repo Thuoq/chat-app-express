@@ -15,6 +15,7 @@ class UserController {
   }
   async getListUserOnline(req, res, next) {
     const currentUserId = req.currentUser.id
+    console.log('run ere')
     const users = await userService.getListUserOnline()
     new OK({
       message: 'Get Users Online success fully',

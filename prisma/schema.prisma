@@ -71,7 +71,7 @@ model Role {
 
 model Message {
   id             Int          @id @default(autoincrement())
-  content        String
+  content        String?
   conversationId Int          @map("conversation_id")
   conversation   Conversation @relation(fields: [conversationId], references: [id])
 
