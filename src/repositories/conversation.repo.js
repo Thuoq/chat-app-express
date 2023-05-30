@@ -38,8 +38,12 @@ const createConversationByUser = (currentUserId, payload) => {
     },
   })
 }
-const getConversationByUser = () => {
-  return prisma.conversation.findFirst({})
+const findConversationById = (id) => {
+  return prisma.conversation.findUnique({
+    where: {
+      id,
+    },
+  })
 }
 
 const createConversation4Group = ({ avatarUrl, name, memberIds }) => {
@@ -70,6 +74,38 @@ const getListConversationGroupByUser = (currentUserId) => {
     },
   })
 }
+const getListConversation = ({ isDirectMessage, currentUserId }) => {
+  if (Number(isDirectMessage) === CONVERSATION_TYPE.group) {
+    return getListConversationGroupByUser(currentUserId)
+  }
+  return getListDirectConversation(currentUserId)
+}
+const getListDirectConversation = (currentUserId) => {
+  return prisma.conversation.findMany({
+    where: {
+      isDirectMessage: CONVERSATION_TYPE.directMessage,
+      messages: {
+        some: {
+          OR: [{ fromUserId: currentUserId }, { toUserId: currentUserId }],
+        },
+      },
+    },
+    include: {
+      messages: {
+        take: 1,
+        include: {
+          receivedBy: {
+            select: {
+              id: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
+    },
+  })
+}
 const findConversationGroupById = (id, currentUserId) =>
   prisma.conversation.findFirst({
     where: {
@@ -88,4 +124,6 @@ module.exports = {
   createConversation4Group,
   getListConversationGroupByUser,
   findConversationGroupById,
+  findConversationById,
+  getListConversation,
 }

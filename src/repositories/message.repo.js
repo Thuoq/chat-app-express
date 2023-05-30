@@ -1,24 +1,17 @@
 const { prisma } = require('../database')
 const { CONVERSATION_TYPE } = require('../utils/constant')
-const getListMessageOne2One = (currentUserId, targetUserId) => {
+const getListMessageOne2One = (currentUserId, conversationId) => {
   return prisma.message.findMany({
     where: {
-      fromUserId: {
-        in: [currentUserId, targetUserId],
-      },
-      toUserId: {
-        in: [currentUserId, targetUserId],
-      },
-      sentBy: {
-        id: {
-          in: [currentUserId, targetUserId],
+      OR: [
+        {
+          fromUserId: currentUserId,
         },
-      },
-      receivedBy: {
-        id: {
-          in: [currentUserId, targetUserId],
+        {
+          toUserId: currentUserId,
         },
-      },
+      ],
+      conversationId,
     },
     include: {
       sentBy: {
@@ -82,18 +75,19 @@ const createMessageOne2One = (currentUserId, body, conversationId = null) => {
     return message
   })
 }
-const createMessageOne2OneWhenImage = (
+const createMessageWhenImage = ({
   currentUserId,
   payload,
   conversationId,
-) => {
+  isDirectMessage,
+}) => {
   return prisma.$transaction(async (tx) => {
     const conversation = conversationId
       ? { id: conversationId }
       : await tx.conversation.create({
           data: {
             name: null,
-            isDirectMessage: CONVERSATION_TYPE.directMessage,
+            isDirectMessage,
           },
         })
 
@@ -139,11 +133,28 @@ const getListMessageGroupByMember = (memberId, conversationId) => {
     },
   })
 }
+const getListMessageByConversationId = ({
+  isDirectMessage,
+  conversationId,
+  currentUserId,
+}) => {
+  if (Number(isDirectMessage) === CONVERSATION_TYPE.directMessage) {
+    return getListMessageOne2One(currentUserId, conversationId)
+  }
+  return getListMessageGroupByMember(currentUserId, conversationId)
+}
+
+const createMessages = ({ payload }) =>
+  prisma.message.createMany({
+    data: payload,
+  })
+
 module.exports = {
   getListMessageOne2One,
   createMessageOne2One,
   getOneMessageOne2One,
   createMessage4Group,
   getListMessageGroupByMember,
-  createMessageOne2OneWhenImage,
+  createMessages,
+  getListMessageByConversationId,
 }

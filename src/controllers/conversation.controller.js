@@ -10,7 +10,6 @@ class ConversationController {
     if (!errors.isEmpty()) throw new BadRequestError('Input Invalid !')
     const bufferImage = req.file.buffer
     const currentUserId = req.currentUser.id
-    console.log('body:: ', req.body, bufferImage)
     new CREATED({
       metadata: await ConversationService.createConversation4Group(
         currentUserId,
@@ -18,16 +17,17 @@ class ConversationController {
       ),
     }).send(res)
   }
-  async getListConversationGroupByUser(req, res, next) {
+  async getListConversations(req, res, next) {
     const currentUserId = req.currentUser.id
+    const { isDirectMessage } = req.query
+    const metadata = await ConversationService.getListConversation({
+      isDirectMessage,
+      currentUserId,
+    })
+
     new OK({
-      metadata: await ConversationService.getListConversationGroup(
-        currentUserId,
-      ),
+      metadata,
     }).send(res)
-  }
-  async getListMessagesGroupByMember(req, res, next) {
-    const currentUserId = req.currentUser.id
   }
 }
 
