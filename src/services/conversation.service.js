@@ -9,15 +9,6 @@ class ConversationService {
     )
     return { conversations }
   }
-  static async createConversationByUser(userId, payload) {
-    const conversation = await conversationRepo.createConversationByUser(
-      userId,
-      payload,
-    )
-    return {
-      conversation,
-    }
-  }
   static async createConversation4Group(userId, payload) {
     const membersIdsParse = payload.memberIds.split(',').map(Number)
     if (membersIdsParse.length <= 1) throw new BadRequestError()

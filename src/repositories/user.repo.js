@@ -54,6 +54,23 @@ const getListUserByStatusCode = (statusCode) =>
       statusCode,
     },
   })
+
+const getListUserInDb = (currentUserId) =>
+  prisma.user.findMany({
+    where: {
+      id: {
+        not: {
+          equals: currentUserId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      avatarUrl: true,
+      email: true,
+    },
+  })
 module.exports = {
   findUserByEmail,
   createUser,
@@ -62,4 +79,5 @@ module.exports = {
   updateUserByPayload,
   getListUserByFromIds,
   getListUserByStatusCode,
+  getListUserInDb,
 }

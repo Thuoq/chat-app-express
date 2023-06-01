@@ -18,5 +18,11 @@ class UserService {
       users,
     }
   }
+  static async getListUserInDb(currentUserId) {
+    const users = await userRepo.getListUserInDb(currentUserId)
+    return {
+      users,
+    }
+  }
 }
 module.exports = UserService
