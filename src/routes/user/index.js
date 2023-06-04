@@ -12,4 +12,8 @@ router.post(
 )
 router.get('/', asyncHandler(userController.getListUserInDb))
 router.get('/online', asyncHandler(userController.getListUserOnline))
+router.get(
+  '/:targetUserId/messages',
+  asyncHandler(userController.getListMessagesFromTargetUser),
+)
 module.exports = router

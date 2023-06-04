@@ -55,13 +55,16 @@ const getListUserByStatusCode = (statusCode) =>
     },
   })
 
-const getListUserInDb = (currentUserId) =>
+const getListUserInDb = (currentUserId, query) =>
   prisma.user.findMany({
     where: {
       id: {
         not: {
           equals: currentUserId,
         },
+      },
+      name: {
+        contains: query.name,
       },
     },
     select: {

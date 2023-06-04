@@ -1,4 +1,5 @@
 const userRepo = require('../repositories/user.repo')
+const messageRepo = require('../repositories/message.repo')
 const { getImageUrlFromCloudinary } = require('../utils')
 const { USER_STATUS_CODE } = require('../utils/constant')
 class UserService {
@@ -18,10 +19,20 @@ class UserService {
       users,
     }
   }
-  static async getListUserInDb(currentUserId) {
-    const users = await userRepo.getListUserInDb(currentUserId)
+  static async getListUserInDb(currentUserId, query) {
+    if (query && query.name === '') return []
+    const users = await userRepo.getListUserInDb(currentUserId, query)
     return {
       users,
+    }
+  }
+  static async getListMessagesFromTargetUser(currentUserId, targetUserId) {
+    const messages = await messageRepo.getListMessagesFromTargetUserId(
+      currentUserId,
+      targetUserId,
+    )
+    return {
+      messages,
     }
   }
 }

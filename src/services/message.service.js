@@ -1,6 +1,7 @@
 const messageRepo = require('../repositories/message.repo')
 const conversationRepo = require('../repositories/conversation.repo')
 const { NotFoundError } = require('../core')
+const cloudinary = require('cloudinary').v2
 class MessageService {
   static async getMessagesByConversationId({
     currentUserId,

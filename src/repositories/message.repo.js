@@ -144,6 +144,32 @@ const getListMessageByConversationId = ({
   return getListMessageGroupByMember(currentUserId, conversationId)
 }
 
+const getListMessagesFromTargetUserId = (currentUserId, targetUserId) => {
+  return prisma.message.findMany({
+    where: {
+      fromUserId: {
+        in: [currentUserId, targetUserId],
+      },
+      toUserId: {
+        in: [currentUserId, targetUserId],
+      },
+      sentBy: {
+        id: {
+          in: [currentUserId, targetUserId],
+        },
+      },
+      receivedBy: {
+        id: {
+          in: [currentUserId, targetUserId],
+        },
+      },
+    },
+    include: {
+      conversation: true,
+    },
+  })
+}
+
 const createMessages = ({ payload }) =>
   prisma.message.createMany({
     data: payload,
@@ -157,4 +183,5 @@ module.exports = {
   getListMessageGroupByMember,
   createMessages,
   getListMessageByConversationId,
+  getListMessagesFromTargetUserId,
 }
