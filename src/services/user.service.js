@@ -2,6 +2,7 @@ const userRepo = require('../repositories/user.repo')
 const messageRepo = require('../repositories/message.repo')
 const { getImageUrlFromCloudinary } = require('../utils')
 const { USER_STATUS_CODE } = require('../utils/constant')
+const { getInfoData } = require('../utils/object')
 class UserService {
   static async uploadAvatar(currentUserId, imageBuffer) {
     const { imageUrl } = await getImageUrlFromCloudinary(imageBuffer)
@@ -33,6 +34,18 @@ class UserService {
     )
     return {
       messages,
+    }
+  }
+  static async updateInformation(currentUserId, { name, statusCode }) {
+    const updatedUser = await userRepo.updateUserByPayload(currentUserId, {
+      name,
+      statusCode,
+    })
+    return {
+      user: getInfoData({
+        fields: ['id', 'name', 'email', 'avatarUrl', 'statusCode'],
+        obj: updatedUser,
+      }),
     }
   }
 }

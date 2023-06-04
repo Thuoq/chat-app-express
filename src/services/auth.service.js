@@ -64,7 +64,7 @@ class AuthService {
     return {
       tokens,
       user: getInfoData({
-        fields: ['id', 'name', 'email', 'avatarUrl'],
+        fields: ['id', 'name', 'email', 'avatarUrl', 'statusCode'],
         obj: user,
       }),
     }

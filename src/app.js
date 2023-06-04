@@ -27,8 +27,7 @@ app.use(
 app.use(
   cors({
     origin: process.env.FE_BASE_URL,
-    methods: '*',
-    optionsSuccessStatus: 204,
+    methods: 'GET,PATCH,POST,DELETE',
     credentials: true,
   }),
 )

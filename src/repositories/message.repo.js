@@ -75,33 +75,6 @@ const createMessageOne2One = (currentUserId, body, conversationId = null) => {
     return message
   })
 }
-const createMessageWhenImage = ({
-  currentUserId,
-  payload,
-  conversationId,
-  isDirectMessage,
-}) => {
-  return prisma.$transaction(async (tx) => {
-    const conversation = conversationId
-      ? { id: conversationId }
-      : await tx.conversation.create({
-          data: {
-            name: null,
-            isDirectMessage,
-          },
-        })
-
-    const listMessage = tx.message.createMany({
-      data: payload.map(({ imageUrl, targetUserId }) => ({
-        imageUrl,
-        fromUserId: currentUserId,
-        toUserId: targetUserId,
-        conversationId: conversation.id,
-      })),
-    })
-    return listMessage
-  })
-}
 const createMessage4Group = (currentUserId, conversationId, payload) => {
   return prisma.message.create({
     data: {
@@ -147,25 +120,32 @@ const getListMessageByConversationId = ({
 const getListMessagesFromTargetUserId = (currentUserId, targetUserId) => {
   return prisma.message.findMany({
     where: {
-      fromUserId: {
-        in: [currentUserId, targetUserId],
-      },
-      toUserId: {
-        in: [currentUserId, targetUserId],
-      },
-      sentBy: {
-        id: {
-          in: [currentUserId, targetUserId],
+      OR: [
+        {
+          fromUserId: currentUserId,
+          toUserId: targetUserId,
         },
-      },
-      receivedBy: {
-        id: {
-          in: [currentUserId, targetUserId],
+        {
+          fromUserId: targetUserId,
+          toUserId: currentUserId,
         },
+      ],
+      conversation: {
+        isDirectMessage: CONVERSATION_TYPE.directMessage,
       },
     },
     include: {
       conversation: true,
+      sentBy: {
+        select: {
+          avatarUrl: true,
+        },
+      },
+      receivedBy: {
+        select: {
+          avatarUrl: true,
+        },
+      },
     },
   })
 }

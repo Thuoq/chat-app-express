@@ -90,6 +90,13 @@ const getListDirectConversation = (currentUserId) => {
               avatarUrl: true,
             },
           },
+          sentBy: {
+            select: {
+              id: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
         },
       },
     },
