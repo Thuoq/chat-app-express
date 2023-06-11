@@ -11,6 +11,11 @@ router.post(
   uploadFile.single('avatar'),
   asyncHandler(conversationController.createConversation4Group),
 )
+// Group add members
+router.post(
+  '/:id/group-members',
+  asyncHandler(conversationController.addMembersIntoGroup),
+)
 
 router.use('/:id/messages', messageRouter)
 

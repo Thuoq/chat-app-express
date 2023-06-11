@@ -27,8 +27,12 @@ class UserController {
   async getListUserInDb(req, res, next) {
     const currentUserId = req.currentUser.id
     const queryName = req.query.name
+    const excludeUserIds =
+      req.query?.excludeUserIds?.split(',').map(Number) || []
+
     const users = await userService.getListUserInDb(currentUserId, {
       name: queryName,
+      excludeUserIds,
     })
     new OK({
       metadata: users,

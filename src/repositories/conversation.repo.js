@@ -61,6 +61,19 @@ const getListConversationGroupByUser = (currentUserId) => {
         },
       },
     },
+    include: {
+      groupMembers: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              avatarUrl: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
   })
 }
 const getListConversation = ({ isDirectMessage, currentUserId }) => {
@@ -88,6 +101,7 @@ const getListDirectConversation = (currentUserId) => {
               id: true,
               name: true,
               avatarUrl: true,
+              statusCode: true,
             },
           },
           sentBy: {
@@ -95,6 +109,7 @@ const getListDirectConversation = (currentUserId) => {
               id: true,
               name: true,
               avatarUrl: true,
+              statusCode: true,
             },
           },
         },
@@ -123,6 +138,31 @@ const createConversationOne2One = () =>
       isDirectMessage: CONVERSATION_TYPE.directMessage,
     },
   })
+
+const addMembersInGroup = (conversationId, payload = []) =>
+  prisma.conversation.update({
+    where: {
+      id: conversationId,
+    },
+    data: {
+      groupMembers: {
+        createMany: { data: payload.map((userId) => ({ userId })) },
+      },
+    },
+    include: {
+      groupMembers: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              avatarUrl: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  })
 module.exports = {
   getListConversationByUser,
   createConversation4Group,
@@ -131,4 +171,5 @@ module.exports = {
   findConversationById,
   getListConversation,
   createConversationOne2One,
+  addMembersInGroup,
 }

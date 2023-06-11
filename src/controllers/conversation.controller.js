@@ -29,6 +29,20 @@ class ConversationController {
       metadata,
     }).send(res)
   }
+  async addMembersIntoGroup(req, res, next) {
+    const currentUserId = req.currentUser.id
+    const conversationId = Number(req.params.id)
+
+    const metadata = await ConversationService.addMembersIntoGroup(
+      currentUserId,
+      conversationId,
+      req.body.memberIds,
+    )
+
+    new OK({
+      metadata,
+    }).send(res)
+  }
 }
 
 module.exports = new ConversationController()

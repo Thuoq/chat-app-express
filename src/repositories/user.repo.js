@@ -55,16 +55,14 @@ const getListUserByStatusCode = (statusCode) =>
     },
   })
 
-const getListUserInDb = (currentUserId, query) =>
-  prisma.user.findMany({
+const getListUserInDb = ({ excludeUserIds, name }) => {
+  return prisma.user.findMany({
     where: {
       id: {
-        not: {
-          equals: currentUserId,
-        },
+        notIn: excludeUserIds,
       },
       name: {
-        contains: query.name,
+        contains: name,
       },
     },
     select: {
@@ -74,6 +72,7 @@ const getListUserInDb = (currentUserId, query) =>
       email: true,
     },
   })
+}
 module.exports = {
   findUserByEmail,
   createUser,

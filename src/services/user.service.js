@@ -20,9 +20,14 @@ class UserService {
       users,
     }
   }
-  static async getListUserInDb(currentUserId, query) {
-    if (query && query.name === '') return []
-    const users = await userRepo.getListUserInDb(currentUserId, query)
+  static async getListUserInDb(currentUserId, { name, excludeUserIds }) {
+    if (name === '') return []
+    const excludeUserIdsModified = [].concat(excludeUserIds)
+    excludeUserIdsModified.push(currentUserId)
+    const users = await userRepo.getListUserInDb({
+      excludeUserIds: excludeUserIdsModified,
+      name,
+    })
     return {
       users,
     }

@@ -1,7 +1,7 @@
 const conversationRepo = require('../repositories/conversation.repo')
 const { getImageUrlFromCloudinary } = require('../utils')
 const userRepo = require('../repositories/user.repo')
-const { BadRequestError } = require('../core/error.response')
+const { BadRequestError, NotFoundError } = require('../core/error.response')
 class ConversationService {
   static async getAllConversationByUser(userId) {
     const conversations = await conversationRepo.getListConversationByUser(
@@ -35,6 +35,19 @@ class ConversationService {
       isDirectMessage,
     })
     return { conversations }
+  }
+  static async addMembersIntoGroup(currentUserId, conversationId, payload) {
+    // check conversationId
+    const conversation = await conversationRepo.findConversationById(
+      conversationId,
+    )
+    if (!conversation) throw new NotFoundError()
+
+    const conversationUpdated = await conversationRepo.addMembersInGroup(
+      conversationId,
+      payload,
+    )
+    return { conversation: conversationUpdated }
   }
 }
 module.exports = ConversationService
