@@ -22,11 +22,11 @@ router.post(
 )
 // FORGOT PASSWORD
 router.post('/forgot-password', body('email').isEmail(), asyncHandler())
+router.get('/refresh-token', asyncHandler(authController.refreshToken))
 
 router.use(checkAuthentication)
 // LOGOUT
 router.post('/logout', asyncHandler(authController.logOut))
 
 // Refresh Token
-router.post('/refresh-token', asyncHandler(authController.refreshToken))
 module.exports = router

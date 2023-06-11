@@ -61,6 +61,7 @@ class AuthService {
       publicKey,
       refreshToken,
     })
+
     return {
       tokens,
       user: getInfoData({

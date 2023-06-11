@@ -1,7 +1,5 @@
 const crypto = require('node:crypto')
 const jwt = require('jsonwebtoken')
-const ACCESS_TOKEN_EXPIRE = Number(process.env.ACCESS_TOKEN_EXPIRE)
-const REFRESH_TOKEN_EXPIRE = '7d'
 const { REQUEST_HEADER } = require('../core')
 const { AuthFailureError, asyncHandler } = require('../core')
 const KeyTokenService = require('../services/keytoken.service')
@@ -25,10 +23,10 @@ const isValidPassword = ({ passwordPlainText, salt, passwordHash }) => {
 }
 const generateTokens = async (payload, privateKey, publicKey) => {
   const accessTokenProcess = jwt.sign(payload, publicKey, {
-    expiresIn: ACCESS_TOKEN_EXPIRE,
+    expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRE),
   })
   const refreshTokenProcess = jwt.sign(payload, privateKey, {
-    expiresIn: REFRESH_TOKEN_EXPIRE,
+    expiresIn: `${process.env.REFRESH_TOKEN_EXPIRE_DAY}d`,
   })
   const [accessToken, refreshToken] = await Promise.all([
     accessTokenProcess,
@@ -50,20 +48,7 @@ const checkAuthentication = asyncHandler(async (req, res, next) => {
   const keyToken = await KeyTokenService.findKeyTokenByUserId(userId)
 
   if (!keyToken) throw new AuthFailureError('Invalid Request')
-  // Handle When Refresh Token
-  const refreshToken = req.headers[REQUEST_HEADER.REFRESH_TOKEN]
-  if (refreshToken) {
-    const decodedUser = await verifyToken(refreshToken, keyToken.privateKey)
-    if (decodedUser.userId !== userId)
-      throw new AuthFailureError('Invalid User')
 
-    req.currentUser = keyToken.user
-    req.keyToken = keyToken
-    req.refreshTokenPayload = refreshToken
-    return next()
-  }
-
-  // Handle When Access Token
   const accessToken = req.cookies[REQUEST_HEADER.AUTHORIZATION]
   if (!accessToken) throw new AuthFailureError('Invalid Request')
 

@@ -1,8 +1,10 @@
-const { OK, BadRequestError, CREATED } = require('../core')
+const { OK, BadRequestError, CREATED, AuthFailureError } = require('../core')
 const { validationResult } = require('express-validator')
 const AuthService = require('../services/auth.service')
 const { REQUEST_HEADER } = require('../core')
-const { addDays } = require('date-fns')
+const { addDays, addMinutes, addMilliseconds } = require('date-fns')
+const { verifyToken } = require('../utils/auth')
+const KeyTokenService = require('../services/keytoken.service')
 class AuthController {
   async signUp(req, res, next) {
     const errors = validationResult(req)
@@ -36,9 +38,22 @@ class AuthController {
     }).send(res)
   }
   async refreshToken(req, res, next) {
-    const user = req.currentUser
-    const keyToken = req.keyToken
-    const refreshTokenPayload = req.refreshTokenPayload
+    const userId = +req.headers[REQUEST_HEADER.CLIENT_ID]
+    if (!userId) throw new AuthFailureError('Invalid Request')
+    const refreshTokenPayload = req.cookies[REQUEST_HEADER.REFRESH_TOKEN]
+    const keyToken = await KeyTokenService.findKeyTokenByUserId(userId)
+
+    if (!keyToken) throw new AuthFailureError('Invalid Request')
+
+    if (refreshTokenPayload) {
+      const decodedUser = await verifyToken(
+        refreshTokenPayload,
+        keyToken.privateKey,
+      )
+      if (decodedUser.userId !== userId)
+        throw new AuthFailureError('Invalid User')
+    }
+    const user = keyToken.user
 
     const metadata = await AuthService.handleRequestRefreshToken(
       user,
@@ -69,13 +84,13 @@ class AuthController {
     const today = new Date()
     res.cookie(REQUEST_HEADER.AUTHORIZATION, tokens.accessToken, {
       httpOnly: true,
-      expires: addDays(today, 2),
+      expires: addMilliseconds(today, Number(process.env.ACCESS_TOKEN_EXPIRE)),
       secure: true,
       sameSite: true,
     })
     res.cookie(REQUEST_HEADER.REFRESH_TOKEN, tokens.refreshToken, {
       httpOnly: true,
-      expires: addDays(today, 7),
+      expires: addDays(today, Number(process.env.REFRESH_TOKEN_EXPIRE_DAY)),
       secure: true,
       sameSite: true,
     })
