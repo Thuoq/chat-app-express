@@ -70,6 +70,7 @@ const getListUserInDb = ({ excludeUserIds, name }) => {
       name: true,
       avatarUrl: true,
       email: true,
+      statusCode: true,
     },
   })
 }

@@ -13,7 +13,12 @@ class MessageService {
       conversationId,
       isDirectMessage,
     })
-    return { messages }
+    const messagesImages = await messageRepo.getImagesFromConversation({
+      conversationId,
+      isDirectMessage,
+      currentUserId,
+    })
+    return { messages, messagesImages }
   }
 
   static async createMessage(
@@ -55,6 +60,13 @@ class MessageService {
       payload,
     })
     return true
+  }
+  static async getImagesMessageByConversation(payload) {
+    const messagesImages = await messageRepo.getImagesFromConversation(payload)
+
+    return {
+      messagesImages,
+    }
   }
 }
 module.exports = MessageService

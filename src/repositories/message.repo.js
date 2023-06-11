@@ -139,11 +139,15 @@ const getListMessagesFromTargetUserId = (currentUserId, targetUserId) => {
       sentBy: {
         select: {
           avatarUrl: true,
+          statusCode: true,
+          name: true,
         },
       },
       receivedBy: {
         select: {
           avatarUrl: true,
+          statusCode: true,
+          name: true,
         },
       },
     },
@@ -155,6 +159,43 @@ const createMessages = ({ payload }) =>
     data: payload,
   })
 
+const getImagesFromConversation = ({ conversationId, conversationType }) =>
+  prisma.message.findMany({
+    where: {
+      conversation: {
+        isDirectMessage: conversationType,
+        id: conversationId,
+      },
+      content: null,
+      imageUrl: {
+        not: null,
+      },
+    },
+  })
+
+const getImagesMessageFromTargetUserId = (currentUserId, targetUserId) => {
+  return prisma.message.findMany({
+    where: {
+      OR: [
+        {
+          fromUserId: currentUserId,
+          toUserId: targetUserId,
+        },
+        {
+          fromUserId: targetUserId,
+          toUserId: currentUserId,
+        },
+      ],
+      content: null,
+      imageUrl: {
+        not: null,
+      },
+      conversation: {
+        isDirectMessage: CONVERSATION_TYPE.directMessage,
+      },
+    },
+  })
+}
 module.exports = {
   getListMessageOne2One,
   createMessageOne2One,
@@ -164,4 +205,6 @@ module.exports = {
   createMessages,
   getListMessageByConversationId,
   getListMessagesFromTargetUserId,
+  getImagesFromConversation,
+  getImagesMessageFromTargetUserId,
 }

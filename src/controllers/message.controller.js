@@ -28,6 +28,17 @@ class MessageController {
       metadata,
     }).send(res)
   }
+  async getMessageImageByConversationId(req, res, next) {
+    const conversationId = Number(req.params.id)
+    const isDirectMessage = req.query.isDirectMessage
+    const metadata = await MessageService.getImagesMessageByConversation({
+      conversationId,
+      isDirectMessage,
+    })
+    new OK({
+      metadata,
+    }).send(res)
+  }
 }
 
 module.exports = new MessageController()

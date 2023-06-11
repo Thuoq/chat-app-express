@@ -5,4 +5,8 @@ const { asyncHandler } = require('../../core')
 
 router.get('/', asyncHandler(messageController.getMessagesByConversationId))
 router.post('/', asyncHandler(messageController.createMessageByConversationId))
+router.get(
+  '/images',
+  asyncHandler(messageController.getMessageImageByConversationId),
+)
 module.exports = router

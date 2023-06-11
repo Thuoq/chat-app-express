@@ -37,8 +37,13 @@ class UserService {
       currentUserId,
       targetUserId,
     )
+    const imagesMessage = await messageRepo.getImagesMessageFromTargetUserId(
+      currentUserId,
+      targetUserId,
+    )
     return {
       messages,
+      imagesMessage,
     }
   }
   static async updateInformation(currentUserId, { name, statusCode }) {
