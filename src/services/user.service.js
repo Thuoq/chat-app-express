@@ -3,7 +3,16 @@ const messageRepo = require('../repositories/message.repo')
 const { getImageUrlFromCloudinary } = require('../utils')
 const { USER_STATUS_CODE } = require('../utils/constant')
 const { getInfoData } = require('../utils/object')
+const { NotFoundError } = require('../core/error.response')
 class UserService {
+  static async getUserById(userId) {
+    const user = await userRepo.findUserById(userId)
+    if (!user) throw new NotFoundError()
+    return getInfoData({
+      fields: ['id', 'name', 'email', 'avatarUrl', 'statusCode'],
+      obj: user,
+    })
+  }
   static async uploadAvatar(currentUserId, imageBuffer) {
     const { imageUrl } = await getImageUrlFromCloudinary(imageBuffer)
     const userUpdated = await userRepo.updateUserByPayload(currentUserId, {

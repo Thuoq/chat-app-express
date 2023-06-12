@@ -22,7 +22,7 @@ class MessageService {
   }
 
   static async createMessage(
-    { currentUserId, conversationId: conversationIdPayload },
+    { currentUserId, conversationId: conversationIdPayload, isDirectMessage },
     body,
   ) {
     let conversationId = conversationIdPayload
@@ -59,7 +59,15 @@ class MessageService {
     await messageRepo.createMessages({
       payload,
     })
-    return true
+
+    return {
+      ...(await this.getMessagesByConversationId({
+        currentUserId,
+        conversationId,
+        isDirectMessage,
+      })),
+      conversationId,
+    }
   }
   static async getImagesMessageByConversation(payload) {
     const messagesImages = await messageRepo.getImagesFromConversation(payload)
