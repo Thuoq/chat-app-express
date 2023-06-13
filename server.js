@@ -39,7 +39,6 @@ io.on('connection', (socket) => {
       conversationId: conversationIdPayload,
       ...payload
     }) => {
-      console.log(conversationIdPayload)
       const roomId = getPrivateChatRoomId(senderId, targetUserId)
       socket.join(roomId)
       const { messages, messagesImages, conversationId } =
@@ -65,7 +64,7 @@ io.on('connection', (socket) => {
             currentUserId: targetUserId,
             isDirectMessage: CONVERSATION_TYPE.directMessage,
           })
-        const sendByUser = await UserService.getUserById(targetUserId)
+        const sendByUser = await UserService.getUserById(senderId)
         io.to(usersConnection[targetUserId]).emit(
           SOCKET_EVENT.SEND_MESSAGE_PRIVATE,
           {

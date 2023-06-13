@@ -26,7 +26,7 @@ class MessageService {
     body,
   ) {
     let conversationId = conversationIdPayload
-    if (isNaN(conversationId)) {
+    if (!conversationIdPayload) {
       const newConversation = await conversationRepo.createConversationOne2One()
       conversationId = newConversation.id
     } else {
