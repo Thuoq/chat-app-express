@@ -2,6 +2,7 @@ const express = require('express')
 const { uploadFile } = require('../../utils')
 const { asyncHandler } = require('../../core')
 const userController = require('../../controllers/user.controller')
+const privateChatController = require('../../controllers/private-chat.controller')
 const { body } = require('express-validator')
 
 const router = express.Router()
@@ -18,8 +19,14 @@ router.patch(
   asyncHandler(userController.updateInformation),
 )
 router.get('/online', asyncHandler(userController.getListUserOnline))
+
+// PRIVATE CHAT ===========
+router.get(
+  '/users-recent-chats',
+  asyncHandler(privateChatController.getListUsersRecentlyChat),
+)
 router.get(
   '/:targetUserId/messages',
-  asyncHandler(userController.getListMessagesFromTargetUser),
+  asyncHandler(privateChatController.getListMessagesFromTargetUser),
 )
 module.exports = router

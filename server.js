@@ -3,6 +3,7 @@ const http = require('http')
 const app = require('./src/app')
 const server = http.createServer(app)
 const MessageService = require('./src/services/message.service')
+const MessagePrivateService = require('./src/services/message-private.service')
 const { Server } = require('socket.io')
 const { SOCKET_EVENT } = require('./src/utils/socket.event')
 const { CONVERSATION_TYPE } = require('./src/utils/constant')
@@ -33,47 +34,35 @@ io.on('connection', (socket) => {
 
   socket.on(
     SOCKET_EVENT.PRIVATE_CHAT,
-    async ({
-      senderId,
-      targetUserId,
-      conversationId: conversationIdPayload,
-      ...payload
-    }) => {
+    async ({ senderId, targetUserId, ...payload }) => {
       const roomId = getPrivateChatRoomId(senderId, targetUserId)
       socket.join(roomId)
-      const { messages, messagesImages, conversationId } =
-        await MessageService.createMessage(
-          {
-            currentUserId: senderId,
-            conversationId: conversationIdPayload,
-            isDirectMessage: CONVERSATION_TYPE.directMessage,
-          },
-          { ...payload, targetUserId },
-        )
-      const conversationsOfSenders =
-        await ConversationService.getListConversation({
-          isDirectMessage: CONVERSATION_TYPE.directMessage,
+      const { messages, messagesImages } =
+        await MessagePrivateService.createMessage({
           currentUserId: senderId,
+          ...payload,
+          targetUserId,
         })
+      const recentChatsOfSenders =
+        await MessagePrivateService.getUsersRecentlyChat(senderId)
 
       // check target user is online
       const targetUserIsOnline = usersConnection[targetUserId]
       if (targetUserIsOnline) {
-        const conversationOfReceive =
-          await ConversationService.getListConversation({
-            currentUserId: targetUserId,
-            isDirectMessage: CONVERSATION_TYPE.directMessage,
-          })
-        const sendByUser = await UserService.getUserById(senderId)
+        const [recentChatsOfReceive, sendByUser] = await Promise.all([
+          MessagePrivateService.getUsersRecentlyChat(targetUserId),
+          UserService.getUserById(senderId),
+        ])
+
         io.to(usersConnection[targetUserId]).emit(
           SOCKET_EVENT.SEND_MESSAGE_PRIVATE,
           {
             roomId,
             messages,
             messagesImages,
-            conversations: conversationOfReceive.conversations,
-            conversationId,
+            recentChats: recentChatsOfReceive.users,
             sendBy: sendByUser,
+            targetUserId: senderId,
           },
         )
       }
@@ -81,8 +70,8 @@ io.on('connection', (socket) => {
         roomId,
         messages,
         messagesImages,
-        conversationId,
-        conversations: conversationsOfSenders.conversations,
+        recentChats: recentChatsOfSenders.users,
+        targetUserId,
       }) // Update sender's UI
     },
   )

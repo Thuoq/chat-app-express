@@ -38,17 +38,6 @@ class UserController {
       metadata: users,
     }).send(res)
   }
-  async getListMessagesFromTargetUser(req, res, next) {
-    const currentUserId = req.currentUser.id
-    const targetUserId = Number(req.params.targetUserId)
-    if (!targetUserId) throw new BadRequestError()
-
-    const metadata = await userService.getListMessagesFromTargetUser(
-      currentUserId,
-      targetUserId,
-    )
-    new OK({ metadata }).send(res)
-  }
 
   async updateInformation(req, res, next) {
     const errors = validationResult(req)

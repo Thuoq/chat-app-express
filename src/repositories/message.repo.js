@@ -1,26 +1,32 @@
 const { prisma } = require('../database')
 const { CONVERSATION_TYPE } = require('../utils/constant')
-const getListMessageOne2One = (currentUserId, conversationId) => {
+const getListMessageOne2One = ({ currentUserId, targetUserId }) => {
   return prisma.message.findMany({
     where: {
       OR: [
         {
           fromUserId: currentUserId,
+          toUserId: targetUserId,
         },
         {
           toUserId: currentUserId,
+          fromUserId: targetUserId,
         },
       ],
-      conversationId,
+      conversationId: null,
     },
     include: {
       sentBy: {
         select: {
+          id: true,
+          name: true,
           avatarUrl: true,
         },
       },
       receivedBy: {
         select: {
+          id: true,
+          name: true,
           avatarUrl: true,
         },
       },
@@ -173,7 +179,7 @@ const getImagesFromConversation = ({ conversationId, conversationType }) =>
     },
   })
 
-const getImagesMessageFromTargetUserId = (currentUserId, targetUserId) => {
+const getImagesMessageFromTargetUserId = ({ currentUserId, targetUserId }) => {
   return prisma.message.findMany({
     where: {
       OR: [

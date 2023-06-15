@@ -1,5 +1,6 @@
 const { prisma } = require('../database')
 const { generatePassword } = require('../utils')
+const { CONVERSATION_TYPE } = require('../utils/constant')
 const findUserByEmail = (email) =>
   prisma.user.findUnique({
     where: {
@@ -74,6 +75,40 @@ const getListUserInDb = ({ excludeUserIds, name }) => {
     },
   })
 }
+const getRecentUsersChatById = (userId) =>
+  prisma.user.findMany({
+    where: {
+      OR: [
+        {
+          messagesReceived: {
+            some: {
+              toUserId: userId,
+              conversation: {
+                isDirectMessage: {
+                  not: CONVERSATION_TYPE.group,
+                },
+              },
+            },
+          },
+        },
+        {
+          messagesSent: {
+            some: {
+              toUserId: userId,
+              conversation: {
+                isDirectMessage: {
+                  not: CONVERSATION_TYPE.group,
+                },
+              },
+            },
+          },
+        },
+      ],
+      id: {
+        not: userId,
+      },
+    },
+  })
 module.exports = {
   findUserByEmail,
   createUser,
@@ -83,4 +118,5 @@ module.exports = {
   getListUserByFromIds,
   getListUserByStatusCode,
   getListUserInDb,
+  getRecentUsersChatById,
 }

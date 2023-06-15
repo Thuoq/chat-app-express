@@ -70,10 +70,10 @@ model Role {
 }
 
 model Message {
-  id             Int          @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   content        String?
-  conversationId Int          @map("conversation_id")
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int?          @map("conversation_id")
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
 
   imageUrl             String?   @map("image_url")
   fromUserId           Int       @map("from_user_id")
