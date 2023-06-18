@@ -39,7 +39,7 @@ model Conversation {
   id              Int           @id @default(autoincrement())
   name            String?
   avatarUrl       String?
-  isDirectMessage Int           @default(1) @map("is_direct_message")
+
   createdDatetime DateTime      @default(now()) @map("created_datetime")
   updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
   groupMembers    GroupMember[]

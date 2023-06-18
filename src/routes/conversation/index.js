@@ -7,7 +7,7 @@ const { uploadFile } = require('../../utils/file')
 
 router.get('/', asyncHandler(conversationController.getListConversations))
 router.post(
-  '/group',
+  '/',
   uploadFile.single('avatar'),
   asyncHandler(conversationController.createConversation4Group),
 )

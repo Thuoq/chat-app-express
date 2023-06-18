@@ -19,9 +19,7 @@ class ConversationController {
   }
   async getListConversations(req, res, next) {
     const currentUserId = req.currentUser.id
-    const { isDirectMessage } = req.query
     const metadata = await ConversationService.getListConversation({
-      isDirectMessage,
       currentUserId,
     })
 

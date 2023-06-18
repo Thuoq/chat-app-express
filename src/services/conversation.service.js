@@ -29,10 +29,9 @@ class ConversationService {
       conversation,
     }
   }
-  static async getListConversation({ currentUserId, isDirectMessage }) {
+  static async getListConversation({ currentUserId }) {
     const conversations = await conversationRepo.getListConversation({
       currentUserId,
-      isDirectMessage,
     })
     return { conversations }
   }

@@ -36,51 +36,7 @@ const getListMessageOne2One = ({ currentUserId, targetUserId }) => {
     },
   })
 }
-const getOneMessageOne2One = (currentUserId, targetUserId) => {
-  return prisma.message.findFirst({
-    where: {
-      fromUserId: {
-        in: [currentUserId, targetUserId],
-      },
-      toUserId: {
-        in: [currentUserId, targetUserId],
-      },
-      sentBy: {
-        id: {
-          in: [currentUserId, targetUserId],
-        },
-      },
-      receivedBy: {
-        id: {
-          in: [currentUserId, targetUserId],
-        },
-      },
-    },
-  })
-}
 
-const createMessageOne2One = (currentUserId, body, conversationId = null) => {
-  return prisma.$transaction(async (tx) => {
-    const conversation = conversationId
-      ? { id: conversationId }
-      : await tx.conversation.create({
-          data: {
-            name: null,
-            isDirectMessage: CONVERSATION_TYPE.directMessage,
-          },
-        })
-
-    const message = tx.message.create({
-      data: {
-        content: body.content ? body.content : undefined,
-        fromUserId: currentUserId,
-        toUserId: body.targetUserId,
-        conversationId: conversation.id,
-      },
-    })
-    return message
-  })
-}
 const createMessage4Group = (currentUserId, conversationId, payload) => {
   return prisma.message.create({
     data: {
@@ -112,14 +68,7 @@ const getListMessageGroupByMember = (memberId, conversationId) => {
     },
   })
 }
-const getListMessageByConversationId = ({
-  isDirectMessage,
-  conversationId,
-  currentUserId,
-}) => {
-  if (Number(isDirectMessage) === CONVERSATION_TYPE.directMessage) {
-    return getListMessageOne2One(currentUserId, conversationId)
-  }
+const getListMessageByConversationId = ({ conversationId, currentUserId }) => {
   return getListMessageGroupByMember(currentUserId, conversationId)
 }
 
@@ -196,16 +145,11 @@ const getImagesMessageFromTargetUserId = ({ currentUserId, targetUserId }) => {
       imageUrl: {
         not: null,
       },
-      conversation: {
-        isDirectMessage: CONVERSATION_TYPE.directMessage,
-      },
     },
   })
 }
 module.exports = {
   getListMessageOne2One,
-  createMessageOne2One,
-  getOneMessageOne2One,
   createMessage4Group,
   getListMessageGroupByMember,
   createMessages,

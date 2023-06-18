@@ -1,32 +1,6 @@
 const { prisma } = require('../database')
 const { CONVERSATION_TYPE } = require('../utils')
 
-const getListConversationByUser = (userId) =>
-  prisma.conversation.findMany({
-    where: {
-      groupMember: {
-        some: {
-          userId,
-        },
-      },
-    },
-    include: {
-      messages: {
-        take: 10,
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdDatetime: 'asc',
-    },
-  })
 const findConversationById = (id) => {
   return prisma.conversation.findUnique({
     where: {
@@ -40,7 +14,7 @@ const createConversation4Group = ({ avatarUrl, name, memberIds }) => {
     data: {
       avatarUrl,
       name,
-      isDirectMessage: CONVERSATION_TYPE.group,
+
       groupMembers: {
         createMany: {
           data: memberIds.map((el) => ({
@@ -54,7 +28,6 @@ const createConversation4Group = ({ avatarUrl, name, memberIds }) => {
 const getListConversationGroupByUser = (currentUserId) => {
   return prisma.conversation.findMany({
     where: {
-      isDirectMessage: CONVERSATION_TYPE.group,
       groupMembers: {
         some: {
           userId: currentUserId,
@@ -76,47 +49,10 @@ const getListConversationGroupByUser = (currentUserId) => {
     },
   })
 }
-const getListConversation = ({ isDirectMessage, currentUserId }) => {
-  if (Number(isDirectMessage) === CONVERSATION_TYPE.group) {
-    return getListConversationGroupByUser(currentUserId)
-  }
-  return getListDirectConversation(currentUserId)
+const getListConversation = ({ currentUserId }) => {
+  return getListConversationGroupByUser(currentUserId)
 }
-const getListDirectConversation = (currentUserId) => {
-  return prisma.conversation.findMany({
-    where: {
-      isDirectMessage: CONVERSATION_TYPE.directMessage,
-      messages: {
-        some: {
-          OR: [{ fromUserId: currentUserId }, { toUserId: currentUserId }],
-        },
-      },
-    },
-    include: {
-      messages: {
-        take: 1,
-        include: {
-          receivedBy: {
-            select: {
-              id: true,
-              name: true,
-              avatarUrl: true,
-              statusCode: true,
-            },
-          },
-          sentBy: {
-            select: {
-              id: true,
-              name: true,
-              avatarUrl: true,
-              statusCode: true,
-            },
-          },
-        },
-      },
-    },
-  })
-}
+
 const findConversationGroupById = (id, currentUserId) =>
   prisma.conversation.findFirst({
     where: {
@@ -164,7 +100,6 @@ const addMembersInGroup = (conversationId, payload = []) =>
     },
   })
 module.exports = {
-  getListConversationByUser,
   createConversation4Group,
   getListConversationGroupByUser,
   findConversationGroupById,
