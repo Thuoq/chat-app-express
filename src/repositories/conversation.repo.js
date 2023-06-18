@@ -31,7 +31,7 @@ const getListConversationGroupByUser = (currentUserId) => {
     where: {
       groupMembers: {
         some: {
-          userId: currentUserId,
+          userId: +currentUserId,
         },
       },
     },

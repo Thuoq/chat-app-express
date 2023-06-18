@@ -54,7 +54,6 @@ class MessagePrivateService {
       ),
     }
   }
-  static async handleSendMessage({ senderId, targetUserId, ...payload }) {}
 }
 
 module.exports = MessagePrivateService
