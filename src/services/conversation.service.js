@@ -2,13 +2,8 @@ const conversationRepo = require('../repositories/conversation.repo')
 const { getImageUrlFromCloudinary } = require('../utils')
 const userRepo = require('../repositories/user.repo')
 const { BadRequestError, NotFoundError } = require('../core/error.response')
+
 class ConversationService {
-  static async getAllConversationByUser(userId) {
-    const conversations = await conversationRepo.getListConversationByUser(
-      userId,
-    )
-    return { conversations }
-  }
   static async createConversation4Group(userId, payload) {
     const membersIdsParse = payload.memberIds.split(',').map(Number)
     if (membersIdsParse.length <= 1) throw new BadRequestError()

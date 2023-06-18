@@ -1,6 +1,6 @@
 const { prisma } = require('../database')
 const { CONVERSATION_TYPE } = require('../utils')
-
+const { v4: uuidv4 } = require('uuid')
 const findConversationById = (id) => {
   return prisma.conversation.findUnique({
     where: {
@@ -14,6 +14,7 @@ const createConversation4Group = ({ avatarUrl, name, memberIds }) => {
     data: {
       avatarUrl,
       name,
+      roomId: uuidv4(),
 
       groupMembers: {
         createMany: {

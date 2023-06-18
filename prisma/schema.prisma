@@ -36,10 +36,11 @@ model User {
 }
 
 model Conversation {
-  id              Int           @id @default(autoincrement())
-  name            String?
-  avatarUrl       String?
+  id        Int     @id @default(autoincrement())
+  name      String?
+  avatarUrl String?
 
+  roomId          String        @unique
   createdDatetime DateTime      @default(now()) @map("created_datetime")
   updatedDatetime DateTime      @default(now()) @updatedAt @map("updated_datetime")
   groupMembers    GroupMember[]
