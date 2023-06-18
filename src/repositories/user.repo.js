@@ -82,24 +82,30 @@ const getRecentUsersChatById = (userId) =>
         {
           messagesReceived: {
             some: {
-              toUserId: userId,
-              conversation: {
-                isDirectMessage: {
-                  not: CONVERSATION_TYPE.group,
+              OR: [
+                {
+                  fromUserId: userId,
                 },
-              },
+                {
+                  toUserId: userId,
+                },
+              ],
+              conversationId: null,
             },
           },
         },
         {
           messagesSent: {
             some: {
-              toUserId: userId,
-              conversation: {
-                isDirectMessage: {
-                  not: CONVERSATION_TYPE.group,
+              OR: [
+                {
+                  fromUserId: userId,
                 },
-              },
+                {
+                  toUserId: userId,
+                },
+              ],
+              conversationId: null,
             },
           },
         },
