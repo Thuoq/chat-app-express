@@ -6,7 +6,7 @@ const { BadRequestError, NotFoundError } = require('../core/error.response')
 class ConversationService {
   static async createConversation4Group(userId, payload) {
     const membersIdsParse = payload.memberIds.split(',').map(Number)
-    if (membersIdsParse.length <= 1) throw new BadRequestError()
+    if (membersIdsParse.length < 1) throw new BadRequestError()
 
     const users = await userRepo.getListUserByFromIds(membersIdsParse)
     if (users.length !== membersIdsParse.length) throw new BadRequestError()

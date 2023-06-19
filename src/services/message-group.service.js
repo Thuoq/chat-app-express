@@ -1,5 +1,7 @@
 const messageRepo = require('../repositories/message.repo')
 const messageService = require('./message.service')
+const conversationRepo = require('../repositories/conversation.repo')
+const { NotFoundError } = require('../core/error.response')
 class MessageGroupService {
   static async getMessagesByConversationId({ currentUserId, conversationId }) {
     const messages = await messageRepo.getListMessageByConversationId({
@@ -29,6 +31,19 @@ class MessageGroupService {
       currentUserId,
       conversationId,
     })
+  }
+  static async addMembersIntoGroup(conversationId, payload) {
+    // check conversationId
+    const conversation = await conversationRepo.findConversationById(
+      conversationId,
+    )
+    if (!conversation) throw new NotFoundError()
+
+    const conversationUpdated = await conversationRepo.addMembersInGroup(
+      conversationId,
+      payload,
+    )
+    return { conversation: conversationUpdated }
   }
 }
 
