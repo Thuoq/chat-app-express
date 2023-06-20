@@ -92,7 +92,7 @@ class AuthService {
     const tokens = await generateTokens({ userId }, privateKey, publicKey)
     const { refreshToken } = tokens
     const refreshTokenUsed = keyToken.refreshTokenUsed
-    refreshTokenUsed.push(refreshToken)
+    refreshTokenUsed.push(refreshTokenPayload)
     await keyTokenService.updateKeyTokenByUserId(userId, {
       refreshToken,
       refreshTokenUsed: refreshTokenUsed,

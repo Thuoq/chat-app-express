@@ -63,11 +63,7 @@ class AuthController {
     AuthController.setTokens(res, metadata.tokens)
     new OK({
       message: 'Refresh Token Success Fully',
-      metadata: await AuthService.handleRequestRefreshToken(
-        user,
-        keyToken,
-        refreshTokenPayload,
-      ),
+      metadata,
     }).send(res)
   }
 

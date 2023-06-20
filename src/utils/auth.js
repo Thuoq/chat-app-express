@@ -43,6 +43,7 @@ const verifyToken = (token, secret) => {
 
 const checkAuthentication = asyncHandler(async (req, res, next) => {
   const userId = +req.headers[REQUEST_HEADER.CLIENT_ID]
+
   if (!userId) throw new AuthFailureError('Invalid Request')
 
   const keyToken = await KeyTokenService.findKeyTokenByUserId(userId)
