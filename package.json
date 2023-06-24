@@ -7,6 +7,7 @@
     "prisma:create-migrate-only": "prisma migrate dev --schema=./prisma/schema.prisma --create-only",
     "prisma:generate": "yarn prisma generate --schema=./prisma/schema.prisma",
     "dev": "node --watch server.js",
+    "start": "node server.js",
     "test": "jest"
   },
   "devDependencies": {
