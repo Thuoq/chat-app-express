@@ -15,9 +15,12 @@ services:
         db:
           condition: service_healthy
       restart: always
+      networks:
+        - chat-app
   db:
     container_name: chat-app-db
     image: mysql
+    hostname: localhost
     env_file:
       - docker.env
     volumes:
@@ -29,3 +32,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - chat-app
+networks:
+  chat-app:
+    driver: bridge
