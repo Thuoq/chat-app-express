@@ -7,9 +7,14 @@ services:
         dockerfile: cicd/deployment/Dockerfile
       ports:
         - "8021:8021"
+      env_file:
+        - .env
+      environment:
+        DATABASE_URL: "${DATABASE_URL}"
       depends_on:
         db:
           condition: service_healthy
+      restart: always
   db:
     container_name: chat-app-db
     image: mysql
