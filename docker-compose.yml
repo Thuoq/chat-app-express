@@ -7,3 +7,20 @@ services:
         dockerfile: cicd/deployment/Dockerfile
       ports:
         - "8021:8021"
+      depends_on:
+        db:
+          condition: service_healthy
+  db:
+    container_name: chat-app-db
+    image: mysql
+    env_file:
+      - docker.env
+    volumes:
+      - /data/chat-app
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", 'mysqladmin ping -h localhost -u root --password=${MYSQL_ROOT_PASSWORD}']
+      interval: 10s
+      timeout: 5s
+      retries: 3
