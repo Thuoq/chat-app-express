@@ -8,7 +8,8 @@
     "prisma:generate": "yarn prisma generate --schema=./prisma/schema.prisma",
     "dev": "node --watch server.js",
     "start": "node server.js",
-    "test": "jest"
+    "test": "jest",
+    "deploy:be": "TAG=`echo deploy-be$(date +%Y%m%d-%H%M%S)` && git tag $TAG && git push origin $TAG"
   },
   "devDependencies": {
     "jest": "^29.5.0",
