@@ -10,6 +10,5 @@ COPY ./yarn.lock .
 RUN yarn install
 # Copy the rest of the files
 COPY . .
-EXPOSE 8021
 RUN yarn prisma:generate
 CMD ["yarn", "start"]
