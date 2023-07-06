@@ -9,8 +9,8 @@
     "dev": "node --watch server.js",
     "start": "node server.js",
     "test": "jest",
-    "deploy:clean": "git fetch origin --prune 'refs/tags/*:refs/tags/*' && git push origin --delete $(git tag -l 'deploy-be*') || true && git fetch origin --prune 'refs/tags/*:refs/tags/*'",
-    "deploy:be": "yarn deploy:clean && TAG=`echo deploy-be$(date +%Y%m%d-%H%M%S)` && git tag $TAG && git push origin $TAG"
+    "deploy:be:clean": "git fetch origin --prune 'refs/tags/*:refs/tags/*' && git push origin --delete $(git tag -l 'deploy-be*') || true && git fetch origin --prune 'refs/tags/*:refs/tags/*'",
+    "deploy:be": "yarn deploy:be:clean && TAG=`echo deploy-be$(date +%Y%m%d-%H%M%S)` && git tag $TAG && git push origin $TAG"
   },
   "devDependencies": {
     "jest": "^29.5.0",
