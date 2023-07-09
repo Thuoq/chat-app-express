@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:19-alpine
 
 ENV TZ=Asia/Ho_Chi_Minh
 
