@@ -21,7 +21,7 @@ steps:
       - |
         gcloud beta run deploy ${_APP_NAME} \
           --platform managed \
-          --region us-central1  \
+          --region asia-northeast1  \
           --allow-unauthenticated \
           --add-cloudsql-instances ${_INSTANCE_CONNECTION_NAME} \
           --set-env-vars INSTANCE-CONNECTION-NAME="${_INSTANCE_CONNECTION_NAME}" \
